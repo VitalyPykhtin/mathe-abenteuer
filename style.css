@@ -1,3 +1,5 @@
+@font-face{font-family:'Fredoka';src:url(fonts/fredoka.woff2) format('woff2');font-weight:300 700;font-display:swap}
+@font-face{font-family:'Nunito';src:url(fonts/nunito.woff2) format('woff2');font-weight:200 1000;font-display:swap}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--ink:#1f2937;--head:'Fredoka','Nunito',system-ui,sans-serif;--sh:40vh;--bgA:#1e6fd9;--bgB:#57b947}
 html{font-size:18px}
@@ -191,3 +193,7 @@ button,.caption,.stagehit,.inter svg{touch-action:manipulation}
 .stagehit.my{touch-action:none}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input{-webkit-user-select:text;user-select:text;font-size:16px}
+.pill.warn{background:rgba(254,226,226,.95);color:#991b1b}.pill.off{background:rgba(220,252,231,.95);color:#166534}
+.shop .in{background:#dbeafe;border-color:#93c5fd}.shop .in img{filter:none}.shop span{font-size:.78rem}
+.mytools{max-width:94%;white-space:normal;text-align:center}.mytools .delb{width:auto;padding:0 14px;background:#fecaca;border-radius:999px;font-size:1rem}
+.btn.bordered{border:3px solid #cbd5e1;box-shadow:none;font-size:1rem;padding:10px}

@@ -12,7 +12,6 @@ const eimg = f => `img/e/${f}.png`;
 const photo = id => `img/${id}.jpg`;
 const TOPIC = { wald: 'Nachbarzahlen', savanne: 'Zahlenstrahl', eis: 'Runden', ozean: 'Kreis', dschungel: 'Vierecke', berge: 'Parallel & senkrecht', insel: 'Gemischt' };
 const ENVCSS = { home: ['#1e6fd9', '#57b947'], wald: ['#14532d', '#3f8f3f'], savanne: ['#c2570c', '#e0a030'], eis: ['#1c6fb5', '#8fd0ff'], ozean: ['#0b4f8a', '#1aa3c4'], dschungel: ['#166534', '#52a52e'], berge: ['#3b5fc0', '#6fb86a'], insel: ['#0e8fb8', '#e8c96a'] };
-const HEROES = [['girl', 'Mädchen'], ['princess', 'Prinzessin'], ['woman_fairy', 'Fee'], ['woman_superhero', 'Superheldin'], ['woman_mage', 'Zauberin'], ['woman_astronaut', 'Astronautin'], ['woman_elf', 'Elfe'], ['ninja', 'Ninja'], ['woman_detective', 'Detektivin'], ['woman_artist', 'Künstlerin'], ['woman_scientist', 'Forscherin'], ['woman_singer', 'Sängerin'], ['unicorn', 'Einhorn'], ['cat', 'Katze'], ['dragon', 'Drache'], ['panda', 'Panda'], ['boy', 'Junge'], ['prince', 'Prinz'], ['man_superhero', 'Superheld'], ['man_astronaut', 'Astronaut']];
 const BUDDIES = { wald: ['nelli', 'iggi', 'eule'], savanne: ['gina', 'zora', 'leo'], eis: ['pia', 'robbi', 'bruno'], ozean: ['coco', 'tilda', 'dana'], dschungel: ['mimi', 'pedro', 'tara'], berge: ['alma', 'zick', 'luna'], insel: ['wirbel', 'kiki', 'kalle'] };
 const POOL = {}; WORLDS.forEach(w => { POOL[w.id] = [...new Set(w.levels.flat())]; });
 let MODE = 'home';
@@ -146,7 +145,7 @@ function home() {
     <button class="mode" style="--a:#0369a1;--b:#38bdf8" onclick="G.myWorld()"><img src="${eimg('castle')}" alt=""><span><b>Meine Welt</b><small>Sticker kaufen und 3D-Welt bauen</small></span></button>
     <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>Deine echten Tierfotos</small></span></button>
   </div>
-  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button></div>`;
+  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><button class="pill warn" onclick="G.resetAll()">🗑 Alles zurücksetzen</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span></div>`;
   window.scrollTo(0, 0);
 }
 
@@ -399,39 +398,51 @@ function examCheck() {
 }
 
 /* ===================== MEINE WELT (Sticker) ===================== */
-const STICKERS = [['fox', 0], ['butterfly', 5], ['tulip', 5], ['sunflower', 5], ['mushroom', 5], ['cloud', 5], ['sun', 8], ['deciduous_tree', 8], ['evergreen_tree', 8], ['palm_tree', 8], ['cherry_blossom', 8], ['lady_beetle', 8], ['honeybee', 8], ['snail', 8], ['hatching_chick', 10], ['rabbit', 10], ['hamster', 10], ['mouse', 10], ['frog', 10], ['duck', 10], ['cat', 12], ['dog', 12], ['hedgehog', 12], ['chipmunk', 12], ['owl', 12], ['penguin', 12], ['koala', 12], ['panda', 15], ['otter', 15], ['seal', 15], ['sloth', 15], ['llama', 15], ['deer', 15], ['flamingo', 15], ['swan', 15], ['parrot', 15], ['peacock', 18], ['turtle', 15], ['tropical_fish', 12], ['dolphin', 18], ['whale', 18], ['octopus', 15], ['crab', 10], ['shark', 18], ['monkey', 15], ['tiger', 18], ['lion', 18], ['leopard', 18], ['giraffe', 18], ['zebra', 18], ['elephant', 18], ['kangaroo', 18], ['polar_bear', 18], ['horse', 18], ['raccoon', 15], ['house', 20], ['tent', 15], ['camping', 20], ['sailboat', 20], ['balloon', 10], ['wrapped_gift', 10], ['birthday_cake', 12], ['cupcake', 8], ['soft_ice_cream', 8], ['lollipop', 8], ['strawberry', 6], ['watermelon', 6], ['teddy_bear', 15], ['ribbon', 8], ['red_heart', 8], ['star', 10], ['glowing_star', 12], ['crescent_moon', 12], ['shooting_star', 15], ['ringed_planet', 20], ['rocket', 25], ['snowman', 15], ['rainbow', 25], ['crown', 25], ['carousel_horse', 30], ['ferris_wheel', 35], ['castle', 40], ['unicorn', 40], ['dragon', 45]];
 let MY = null;
+const shopBtn = ([f, p]) => { const own = S.own[f] || p === 0, inW = S.my.items.some(q => q.k === f); return `<button class="${inW ? 'in' : own ? 'own' : ''}" onclick="G.sticker('${f}',${p})"><img src="${eimg(f)}" loading="lazy" alt=""><span>${inW ? '✓ in der Welt' : own ? '＋ hinstellen' : '🪙 ' + p}</span></button>`; };
+const myShop = () => { const el = $('#shop'); if (el) el.innerHTML = [[S.hero, 0], ...STICKERS].map(shopBtn).join(''); };
 function myWorld() {
   MODE = 'my'; MY = { sel: null, drag: false }; S.own.fox = 1;
+  const seen = {}; S.my.items = S.my.items.filter(it => !seen[it.k] && (seen[it.k] = 1)); // jeden Sticker nur einmal
   const envs = ['home', ...CHAPTERS.filter(c => S.done[c.id]).map(c => c.id)]; if (!envs.includes(S.my.env)) S.my.env = 'home';
   myStage();
   app.innerHTML = `<div class="stagehit my" id="myhit">${backBtn('G.home()')}${hud()}<div class="mytools" id="mytools"></div></div>
   <div class="panel"><div class="envs">${Object.keys(ENVCSS).map(e => { const o = envs.includes(e); return `<button class="${S.my.env === e ? 'sel' : ''} ${o ? '' : 'locked'}" style="--a:${ENVCSS[e][0]};--b:${ENVCSS[e][1]}" onclick="${o ? `G.myEnv('${e}')` : `G.say('Diese Welt bekommst du, wenn du das Kapitel in der Geschichte schaffst!')`}">${o ? '' : '🔒'}</button>`; }).join('')}</div>
-    <p class="hint">Tippe auf einen Sticker, um ihn zu kaufen oder in deine Welt zu setzen. Ziehe ihn dann mit dem Finger an seinen Platz.</p>
-    <div class="shop">${[[S.hero, 0], ...STICKERS].map(([f, p]) => `<button class="${S.own[f] || p === 0 ? 'own' : ''}" data-s="${f}" onclick="G.sticker('${f}',${p})"><img src="${eimg(f)}" loading="lazy" alt=""><span>${S.own[f] || p === 0 ? '＋' : '🪙 ' + p}</span></button>`).join('')}</div></div>`;
+    <p class="hint">Jeden Sticker gibt es <b>einmal</b>: kaufen 🪙, dann hinstellen. Tippe ihn in deiner Welt an, um ihn zu <b>verschieben</b>, größer oder kleiner zu machen oder <b>wegzuräumen</b> 🗑.</p>
+    <div class="shop" id="shop"></div>
+    <button class="btn sec bordered" onclick="G.myClear()">🧹 Alle Sticker wegräumen</button></div>`;
+  myShop();
   const hit = $('#myhit');
-  hit.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const p = W3.pick(e.clientX, e.clientY); let best = null, bd = 14; S.my.items.forEach(it => { const d = Math.hypot(it.x - p.x, (it.y + it.s * 0.5 - p.y) * 0.8); if (d < bd) { bd = d; best = it; } }); MY.sel = best ? best.id : null; MY.drag = !!best; if (best) { MY.dx = best.x - p.x; MY.dy = best.y - p.y; hit.setPointerCapture(e.pointerId); } W3.talk(MY.sel); myTools(); });
+  hit.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const p = W3.pick(e.clientX, e.clientY); let best = null; S.my.items.forEach(it => { const hw = Math.max(5, it.s * 0.3); if (Math.abs(p.x - it.x) <= hw && p.y >= it.y - 4 && p.y <= it.y + it.s + 4) best = it; }); MY.sel = best ? best.id : null; MY.drag = !!best; if (best) { MY.dx = best.x - p.x; MY.dy = best.y - p.y; try { hit.setPointerCapture(e.pointerId); } catch (x) { /* egal */ } sfx.tap(); } W3.talk(MY.sel); myTools(); });
   hit.addEventListener('pointermove', e => { if (!MY || !MY.drag) return; const p = W3.pick(e.clientX, e.clientY), it = S.my.items.find(q => q.id === MY.sel); if (!it) return; it.x = Math.max(0, Math.min(100, p.x + MY.dx)); it.y = Math.max(0, Math.min(80, p.y + MY.dy)); W3.moveActor(it.id, it.x, it.y); });
-  hit.addEventListener('pointerup', () => { if (MY && MY.drag) { MY.drag = false; save(); } });
+  const up = () => { if (MY && MY.drag) { MY.drag = false; save(); } }; hit.addEventListener('pointerup', up); hit.addEventListener('pointercancel', up);
   myTools(); window.scrollTo(0, 0);
 }
-function myStage() { stage('full', S.my.env, S.my.items.map(it => ({ id: it.id, img: eimg(it.k), x: it.x, y: it.y, size: it.s, flip: it.f })), true); }
-function myTools() { const el = $('#mytools'); if (!el) return; el.innerHTML = MY.sel ? `<button onclick="G.myEdit('big')">＋</button><button onclick="G.myEdit('small')">－</button><button onclick="G.myEdit('flip')">↔</button><button onclick="G.myEdit('del')">🗑</button>` : (S.my.items.length ? '<span>Tippe einen Sticker an</span>' : '<span>Deine Welt ist noch leer – such dir unten Sticker aus!</span>'); }
+function myStage() { stage('full', S.my.env, S.my.items.map(it => ({ id: it.id, img: eimg(it.k), x: it.x, y: it.y, size: it.s, flip: it.f })), true); if (MY && MY.sel) W3.talk(MY.sel); }
+function myTools() { const el = $('#mytools'); if (!el) return; el.innerHTML = MY.sel ? `<button onclick="G.myEdit('big')">＋</button><button onclick="G.myEdit('small')">－</button><button onclick="G.myEdit('flip')">↔</button><button class="delb" onclick="G.myEdit('del')">🗑 weg</button>` : (S.my.items.length ? '<span>👆 Tippe einen Sticker an: verschieben, Größe ändern oder wegräumen</span>' : '<span>Deine Welt ist noch leer – such dir unten Sticker aus!</span>'); }
 function myEdit(a) {
   const it = S.my.items.find(q => q.id === MY.sel); if (!it) return;
   if (a === 'big') it.s = Math.min(90, it.s * 1.2); if (a === 'small') it.s = Math.max(8, it.s / 1.2); if (a === 'flip') it.f = !it.f;
-  if (a === 'del') { S.my.items = S.my.items.filter(q => q !== it); MY.sel = null; save(); myStage(); myTools(); return; }
+  if (a === 'del') { S.my.items = S.my.items.filter(q => q !== it); MY.sel = null; save(); myStage(); myTools(); myShop(); sfx.tap(); return; }
   W3.sizeActor(it.id, it.s, it.f); sfx.tap(); save();
 }
+function myClear() { if (!S.my.items.length || !confirm('Alle Sticker aus deiner Welt wegräumen? (Sie bleiben gekauft.)')) return; S.my.items = []; MY.sel = null; save(); myStage(); myTools(); myShop(); }
 function myEnv(e) { S.my.env = e; save(); myWorld(); }
 function sticker(f, price) {
+  const there = S.my.items.find(q => q.k === f);
+  if (there) { MY.sel = there.id; W3.talk(there.id); myTools(); sfx.tap(); window.scrollTo({ top: 0, behavior: 'smooth' }); return say('Der Sticker steht schon in deiner Welt. Du kannst ihn oben verschieben oder wegräumen.'); }
   if (!S.own[f] && price > 0) {
     if (S.coins < price) { sfx.bad(); return say(`Dafür brauchst du ${price} Münzen. Löse Aufgaben, um Münzen zu verdienen!`); }
-    S.coins -= price; S.own[f] = 1; save(); sfx.win(); confetti(25); const b = document.querySelector(`.shop [data-s="${f}"]`); if (b) { b.classList.add('own'); b.querySelector('span').textContent = '＋'; } $('#coinct').textContent = S.coins;
+    S.coins -= price; S.own[f] = 1; sfx.win(); confetti(25); $('#coinct').textContent = S.coins;
   }
-  if (S.my.items.length >= 40) return say('Deine Welt ist voll! Lösche erst einen Sticker.');
-  const it = { id: 's' + Date.now(), k: f, x: 20 + Math.random() * 60, y: 3, s: 30, f: false }; S.my.items.push(it); MY.sel = it.id; save(); myStage(); W3.talk(it.id); W3.celebrate(); myTools(); sfx.ok(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  const it = { id: 's' + Date.now(), k: f, x: 20 + Math.random() * 60, y: 3, s: 30, f: false }; S.my.items.push(it); MY.sel = it.id; save(); myStage(); W3.celebrate(); myTools(); myShop(); sfx.ok(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+function resetAll() {
+  if (!confirm('Wirklich ALLES löschen? Münzen, Kristalle, Tierkarten und deine Welt sind dann weg.')) return;
+  if (!confirm('Ganz sicher? Das kann man nicht rückgängig machen.')) return;
+  try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.reload();
+}
+let OFFLINE = false;
 function say(t) { toast(t); speak(t); }
 
 /* ===================== Steuerung ===================== */
@@ -447,9 +458,11 @@ document.addEventListener('keydown', e => {
   else if (q.type === 'choice' && /^[1-4]$/.test(e.key) && +e.key <= q.options.length) choose(+e.key - 1);
   else if (q.type === 'line') { if (e.key === 'ArrowLeft') nudge(-1); if (e.key === 'ArrowRight') nudge(1); }
 });
-const G = { home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, sticker, say, choose, focus, key, nudge, check, quit, toggle };
+const G = { home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, nudge, check, quit, toggle };
 window.G = G;
 
+/* Offline: Service Worker speichert alle Dateien auf dem Gerät (braucht HTTPS oder localhost) */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => { OFFLINE = true; const el = $('#offst'); if (el) el.style.display = ''; }).catch(() => {});
 /* Start */
 if (!W3.init($('#gl'))) document.body.classList.add('nogl');
 (() => { // Tagesbonus
