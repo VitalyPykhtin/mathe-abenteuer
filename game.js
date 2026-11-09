@@ -134,7 +134,7 @@ function home() {
   stage('home', 'home', [actor('polina', 36, 3, 44), actor('finn', 58, 3, 32, 'hop'), ...gems]);
   const ci = CHAPTERS.findIndex(c => !S.done[c.id]), ch = CHAPTERS[ci < 0 ? 0 : ci], allDone = ci < 0;
   const weak = Object.keys(TOPIC).filter(t => S.tp[t] && S.tp[t].n >= 3).sort((a, b) => S.tp[a].ok / S.tp[a].n - S.tp[b].ok / S.tp[b].n)[0];
-  app.innerHTML = `<div class="stagehit"><h1 class="title">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
+  app.innerHTML = `<div class="stagehit"><h1 class="title" id="hometitle" style="pointer-events:auto;-webkit-touch-callout:none">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
   <div class="menu">
     <button class="mode big" style="--a:${ENVCSS[ch.id][0]};--b:${ENVCSS[ch.id][1]}" onclick="G.storyMenu()">
       <img src="${eimg('books')}" alt=""><span><b>📖 Geschichte</b><small>${allDone ? 'Alle 7 Kristalle gefunden! Nochmal ansehen?' : `Kapitel ${ci + 1}: ${ch.title} · Szene ${Math.min((S.story[ch.id] || 0) + 1, ch.scenes.length)} von ${ch.scenes.length}`}</small></span><i>▶</i></button>
@@ -145,7 +145,7 @@ function home() {
     <button class="mode" style="--a:#0369a1;--b:#38bdf8" onclick="G.myWorld()"><img src="${eimg('castle')}" alt=""><span><b>Meine Welt</b><small>Sticker kaufen und 3D-Welt bauen</small></span></button>
     <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>Deine echten Tierfotos</small></span></button>
   </div>
-  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><button class="pill warn" onclick="G.resetAll()">🗑 Alles zurücksetzen</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span></div>`;
+  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span></div>`;
   window.scrollTo(0, 0);
 }
 
@@ -437,11 +437,15 @@ function sticker(f, price) {
   }
   const it = { id: 's' + Date.now(), k: f, x: 20 + Math.random() * 60, y: 3, s: 30, f: false }; S.my.items.push(it); MY.sel = it.id; save(); myStage(); W3.celebrate(); myTools(); myShop(); sfx.ok(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+/* Versteckt für Eltern: Titel auf der Startseite 3 Sekunden gedrückt halten (oder #reset an die Adresse hängen), dann RESET eintippen */
 function resetAll() {
-  if (!confirm('Wirklich ALLES löschen? Münzen, Kristalle, Tierkarten und deine Welt sind dann weg.')) return;
-  if (!confirm('Ganz sicher? Das kann man nicht rückgängig machen.')) return;
-  try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.reload();
+  const a = prompt('Eltern-Bereich: Um ALLES zu löschen (Münzen, Kristalle, Tierkarten, Welt), hier RESET eintippen:');
+  if (!a || a.trim().toUpperCase() !== 'RESET') return;
+  try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.hash = ''; location.reload();
 }
+let holdT = null;
+document.addEventListener('pointerdown', e => { if (e.target.id === 'hometitle') holdT = setTimeout(resetAll, 3000); });
+['pointerup', 'pointercancel', 'pointermove'].forEach(ev => document.addEventListener(ev, () => { clearTimeout(holdT); }));
 let OFFLINE = false;
 function say(t) { toast(t); speak(t); }
 
@@ -470,3 +474,4 @@ if (!W3.init($('#gl'))) document.body.classList.add('nogl');
   if (S.last !== today) { S.days = S.last === y ? S.days + 1 : 1; S.last = today; const bonus = Math.min(S.days, 5) * 3; if (S.hero) { S.coins += bonus; setTimeout(() => toast(`🎁 Tagesbonus: +${bonus} 🪙${S.days > 1 ? ` · ${S.days} Tage in Folge!` : ''}`), 800); } save(); }
 })();
 home();
+if (location.hash === '#reset') setTimeout(resetAll, 500);
