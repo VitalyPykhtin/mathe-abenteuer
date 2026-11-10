@@ -20,7 +20,7 @@ const ACT = {
 const CHAPTERS = [
   { id: 'wald', title: 'Der Zahlenwald', sub: 'Nachbarzahlen', hue: 90, scenes: [
     { bg: 'wald', a: 'polina@22 finn@60!hop',
-      l: ['finn: Polina! Polina! Etwas Schlimmes ist passiert!', 'finn: Die sieben Zahlenkristalle sind verschwunden! Ohne sie purzeln im Zahlenland alle Zahlen durcheinander.', 'polina: Dann suchen wir sie. Los, Finn!'],
+      l: ['finn: {name}! {name}! Etwas Schlimmes ist passiert!', 'finn: Die sieben Zahlenkristalle sind verschwunden! Ohne sie purzeln im Zahlenland alle Zahlen durcheinander.', 'polina: Dann suchen wir sie. Los, Finn!'],
       intro: 'Am Waldeingang hängt ein Zahlenschloss. Es öffnet sich nur mit den richtigen Nachbarn.', g: genNachbar(1000) },
     { bg: 'wald', a: 'polina@12 finn@32 nelli@70!hop nut@86,8*14',
       l: ['nelli: Huhu! Ich bin Nelli. Alle meine Nussverstecke haben Nummern.', 'nelli: Aber seit heute Nacht finde ich die Nachbarverstecke nicht mehr!'],
@@ -32,7 +32,7 @@ const CHAPTERS = [
       l: ['iggi: Stopp! Ich bin Iggi, der Brückenwächter.', 'iggi: Über meine Brücke kommt nur, wer die Nachbarzehntausender kennt!'],
       intro: 'Die erste Planke der Brücke:', g: genNachbar(10000) },
     { bg: 'wald2', a: 'polina@30 finn@48 iggi@76',
-      l: ['iggi: Nicht schlecht! Aber die zweite Planke ist kniffliger.', 'finn: Du schaffst das, Polina!'],
+      l: ['iggi: Nicht schlecht! Aber die zweite Planke ist kniffliger.', 'finn: Du schaffst das, {name}!'],
       intro: 'Die zweite Planke:', g: genNachbarWahl(10000) },
     { bg: 'wald', a: 'polina@14 finn@32 eule@70,40!float lock@88,30*16',
       l: ['eule: Schuhu! Ich habe alles gesehen.', 'eule: Der Waschbär Wirbel hat einen Kristall in meiner Baumhöhle verloren.', 'eule: Doch die Tür hat ein doppeltes Schloss …'],
@@ -76,7 +76,7 @@ const CHAPTERS = [
       l: ['pia: Prima! Und jetzt die große Scholle – die runden wir auf Zehntausender.'],
       intro: 'Die große Scholle:', g: genRunden(10000) },
     { bg: 'eis2', a: 'polina@10 finn@26 pia@52 robbi@78!sway',
-      l: ['robbi: Ich bin Robbi. Ich habe auch gerundet!', 'pia: Aber ich glaube, das ist falsch.', 'robbi: Polina, wer von uns hat recht?'],
+      l: ['robbi: Ich bin Robbi. Ich habe auch gerundet!', 'pia: Aber ich glaube, das ist falsch.', 'robbi: {name}, wer von uns hat recht?'],
       intro: 'Schau genau hin:', g: genLeoRundet(10000) },
     { bg: 'eis2', a: 'polina@12 finn@30 robbi@72!sway fish@88,10*12',
       l: ['robbi: Über die Eisbrücke kommt ihr nur mit dem richtigen Trittstein.', 'robbi: Alle anderen Steine gehen unter. Platsch!'],
@@ -193,7 +193,7 @@ const CHAPTERS = [
     { bg: 'insel', a: 'polina@14 finn@32 gem@52,30*28!pulse wirbel@74!hop',
       l: ['wirbel: Ich hab’s verstanden! Mathe ist ja gar keine Zauberei.', 'wirbel: Hier ist der letzte Kristall. Es tut mir leid, dass ich sie genommen habe.', 'polina: Schon gut, Wirbel. Komm, wir bringen sie zusammen zurück!'] },
     { bg: 'home', a: 'rainbow@50,50*50!pulse polina@40 finn@56!hop wirbel@70!hop nelli@8!hop pia@22!hop leo@84*40 trophy@50,6*22!pulse party@92,50*18!shake',
-      l: ['N: Alle sieben Kristalle leuchten. Ein Regenbogen spannt sich über das ganze Zahlenland!', 'finn: Die Zahlen sind wieder in Ordnung. Du hast das Zahlenland gerettet!', 'N: Und Polina? Sie ist jetzt eine echte Zahlenmeisterin. ENDE.'] },
+      l: ['N: Alle sieben Kristalle leuchten. Ein Regenbogen spannt sich über das ganze Zahlenland!', 'finn: Die Zahlen sind wieder in Ordnung. Du hast das Zahlenland gerettet!', 'N: Und {name}? {Sie} ist jetzt {meisterin}. ENDE.'] },
   ] },
 ];
 

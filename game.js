@@ -39,6 +39,11 @@ function confetti(n = 70) {
 }
 function toast(html) { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = html; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
 function coins(n, quiet) { S.coins += n; save(); if (!quiet) { sfx.coin(); const c = document.createElement('div'); c.className = 'coinfly'; c.textContent = `+${n} 🪙`; document.body.appendChild(c); setTimeout(() => c.remove(), 1200); } const el = $('#coinct'); if (el) el.textContent = S.coins; }
+/* Name und Form (Mädchen/Junge) des gewählten Helden in Texte einsetzen */
+const BOYS = ['boy', 'prince', 'man_superhero', 'man_astronaut'];
+const isBoy = () => BOYS.includes(S.hero);
+const meister = () => isBoy() ? 'ein echter Zahlenmeister' : 'eine echte Zahlenmeisterin';
+const T = t => t.replace(/\{name\}/g, S.name || 'Polina').replace(/\{Sie\}/g, isBoy() ? 'Er' : 'Sie').replace(/\{meisterin\}/g, meister());
 const starStr = (n, max = 3) => '<span class="stars">' + '★'.repeat(n) + '<span class="off">' + '★'.repeat(max - n) + '</span></span>';
 const starsOf = (w, l) => S.stars[w + '-' + l] || 0;
 const cardCount = () => Object.values(S.stars).filter(x => x > 0).length;
@@ -58,7 +63,7 @@ function stage(size, envKey, list, instant) {
   W3.setEnv(name, /2$/.test(envKey) ? 1 : 0); W3.setActors(list || [], instant); W3.talk(null);
   requestAnimationFrame(() => W3.resize());
 }
-const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span>💎 ${gemCount()}/7</span>${S.days > 1 ? `<span>🔥 ${S.days} Tage</span>` : ''}</div>`;
+const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span style="pointer-events:auto;cursor:pointer" onclick="event.stopPropagation();G.gemInfo()">💎 ${gemCount()}/7</span>${S.days > 1 ? `<span>🔥 ${S.days} Tage</span>` : ''}</div>`;
 const backBtn = (fn, label = '← Zurück') => `<button class="back" onclick="event.stopPropagation();${fn}">${label}</button>`;
 
 /* ===================== Aufgaben-Baustein ===================== */
@@ -119,12 +124,12 @@ function chooseHero() {
   app.innerHTML = `<div class="stagehit"><h1 class="title">Willkommen im Zahlenland!</h1></div>
   <div class="panel"><h2>Wer möchtest du sein?</h2>
     <div class="heroes">${HEROES.map(h => `<button class="hero ${S.hero === h[0] ? 'sel' : ''}" data-h="${h[0]}" onclick="G.pickHero('${h[0]}')"><img src="${eimg(h[0])}" alt=""><span>${h[1]}</span></button>`).join('')}</div>
-    <label class="namel">Dein Name: <input id="hname" maxlength="14" value="${S.name || 'Polina'}"></label>
+    <label class="namel">Dein Name: <input id="hname" maxlength="14" placeholder="Wie heißt du?" value="${S.name}"></label>
     <button class="btn" id="herogo" style="background:#e11d74" ${S.hero ? '' : 'disabled'} onclick="G.heroDone()">Abenteuer starten! 🚀</button>
   </div>`;
 }
 function pickHero(h) { S.hero = h; sfx.ok(); document.querySelectorAll('.hero').forEach(b => b.classList.toggle('sel', b.dataset.h === h)); $('#herogo').disabled = false; W3.setActors([actor('polina', 38, 3, 46, 'hop'), actor('finn', 62, 3, 36, 'hop')]); W3.celebrate(); }
-function heroDone() { S.name = ($('#hname').value || 'Polina').trim().slice(0, 14); save(); confetti(60); sfx.win(); home(); }
+function heroDone() { S.name = ($('#hname').value.trim() || (HEROES.find(h => h[0] === S.hero) || ['', 'Polina'])[1]).slice(0, 14); save(); confetti(60); sfx.win(); home(); }
 
 /* ===================== Startseite ===================== */
 function home() {
@@ -138,12 +143,12 @@ function home() {
   <div class="menu">
     <button class="mode big" style="--a:${ENVCSS[ch.id][0]};--b:${ENVCSS[ch.id][1]}" onclick="G.storyMenu()">
       <img src="${eimg('books')}" alt=""><span><b>📖 Geschichte</b><small>${allDone ? 'Alle 7 Kristalle gefunden! Nochmal ansehen?' : `Kapitel ${ci + 1}: ${ch.title} · Szene ${Math.min((S.story[ch.id] || 0) + 1, ch.scenes.length)} von ${ch.scenes.length}`}</small></span><i>▶</i></button>
-    <button class="mode" style="--a:#7c3aed;--b:#c026d3" onclick="G.trainMenu()"><img src="${eimg('bullseye')}" alt=""><span><b>Training</b><small>Tierkarten sammeln · ${cardCount()}/21</small></span></button>
+    <button class="mode" style="--a:#7c3aed;--b:#c026d3" onclick="G.trainMenu()"><img src="${eimg('bullseye')}" alt=""><span><b>Training</b><small>Tierkarten gewinnen · ${cardCount()}/21</small></span></button>
     <button class="mode" style="--a:#ea580c;--b:#facc15" onclick="G.blitzIntro()"><img src="${eimg('high_voltage')}" alt=""><span><b>Blitz-Runde</b><small>90 Sekunden · Rekord: ${S.blitz}</small></span></button>
     <button class="mode" style="--a:#0f766e;--b:#22c55e" onclick="G.examIntro()"><img src="${eimg('memo')}" alt=""><span><b>Klassenarbeit</b><small>${S.exam ? 'Beste Note: ' + S.exam : 'Probe wie in der Schule'}</small></span></button>
     <button class="mode" style="--a:#be123c;--b:#fb7185" onclick="G.weakMenu()"><img src="${eimg('magic_wand')}" alt=""><span><b>Schwächen-Zauber</b><small>${weak ? 'Übe: ' + TOPIC[weak] : 'Übt, was noch schwer ist'}</small></span></button>
     <button class="mode" style="--a:#0369a1;--b:#38bdf8" onclick="G.myWorld()"><img src="${eimg('castle')}" alt=""><span><b>Meine Welt</b><small>Sticker kaufen und 3D-Welt bauen</small></span></button>
-    <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>Deine echten Tierfotos</small></span></button>
+    <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>${cardCount() ? cardCount() + ' von 21 Karten' : 'Karten gewinnst du im Training'}</small></span></button>
   </div>
   <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span></div>`;
   window.scrollTo(0, 0);
@@ -151,12 +156,15 @@ function home() {
 
 /* ===================== GESCHICHTE ===================== */
 let ST = null;
+const GEMINFO = 'Für jedes geschaffte Kapitel bekommst du einen Zahlenkristall und 20 🪙. Jeder Kristall öffnet das nächste Kapitel und eine neue 3D-Welt in „Meine Welt“. Mit allen 7 Kristallen rettest du das Zahlenland!';
+const gemInfo = () => say(GEMINFO);
 const chOpen = i => i === 0 || S.done[CHAPTERS[i - 1].id];
 const chStars = c => { const n = c.scenes.filter(s => s.g).length, f = c.scenes.filter((s, i) => S.sf[c.id + '-' + i] === 1).length, r = f / n; return !S.done[c.id] ? 0 : r >= 0.95 ? 3 : r >= 0.7 ? 2 : 1; };
 function storyMenu() {
   MODE = 'menu'; if (window.speechSynthesis) speechSynthesis.cancel();
   stage('home', 'home', [actor('polina', 30, 3, 42), actor('finn', 46, 3, 30), actor('map', 68, 6, 34, 'pulse')]);
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">Die sieben Zahlenkristalle</h1></div>
+  <p class="rule">💎 ${GEMINFO}</p>
   <div class="chapters">${CHAPTERS.map((c, i) => {
     const open = chOpen(i), n = c.scenes.length, u = S.done[c.id] ? n : Math.min(S.story[c.id] || 0, n);
     return `<button class="chapter ${open ? '' : 'locked'}" style="--a:${ENVCSS[c.id][0]};--b:${ENVCSS[c.id][1]}" onclick="${open ? `G.playChapter(${i})` : ''}">
@@ -189,7 +197,7 @@ function sNext() {
   if (!ST || ST.phase !== 'talk') return;
   const c = CHAPTERS[ST.ci], sc = c.scenes[ST.si]; ST.line++;
   if (ST.line < sc.l.length) {
-    const mm = sc.l[ST.line].match(/^(\w+):\s*(.*)$/), who = mm[1], text = mm[2], isN = who === 'N';
+    const mm = T(sc.l[ST.line]).match(/^(\w+):\s*(.*)$/), who = mm[1], text = mm[2], isN = who === 'N';
     const name = isN ? '' : who === 'polina' ? S.name : ACT[who][1], f = who === 'polina' ? S.hero : isN ? 'scroll' : ACT[who][0];
     $('#cap').innerHTML = `<img src="${eimg(f)}" alt=""><div class="${isN ? 'narr' : ''}"><b>${name}</b><p>${text}</p></div><span class="tapnext">▶</span>`;
     W3.talk(isN ? null : who); sfx.tap(); speak(text, isN ? '' : who); return;
@@ -203,7 +211,7 @@ function sNext() {
 }
 function sTask() {
   const c = CHAPTERS[ST.ci], sc = c.scenes[ST.si], q = sc.g(); ST.t = sc.t || c.id;
-  $('#cap').innerHTML = `<img src="${eimg('scroll')}" alt=""><div class="narr"><p>${sc.intro || 'Löse die Aufgabe!'}</p></div>`; speak(sc.intro);
+  const intro = T(sc.intro || 'Löse die Aufgabe!'); $('#cap').innerHTML = `<img src="${eimg('scroll')}" alt=""><div class="narr"><p>${intro}</p></div>`; speak(intro);
   $('#task').innerHTML = `<div class="card">${ST.first ? '' : '<div class="badge">🔁 Neuer Versuch</div>'}${qHTML(q)}${checkBtn(ENVCSS[c.id][0])}</div>`;
   qMount(q, enableCheck); document.body.style.setProperty('--sh', '32vh');
 }
@@ -232,8 +240,8 @@ function chapterDone(ci) {
   const last = ci === CHAPTERS.length - 1;
   app.innerHTML = `<div class="stagehit"></div><div class="result"><h1>${last ? 'Zahlenland gerettet!' : `Kristall ${gemCount()} von 7!`}</h1>
     <div class="bigstars">${starStr(chStars(c))}</div><p>Kapitel „${c.title}“ geschafft. +20 🪙</p>
-    <p>${last ? 'Du bist jetzt eine echte Zahlenmeisterin! 👑' : `Neu: Die Welt „${c.title}“ kannst du jetzt in „Meine Welt“ benutzen.`}</p>
-    <div class="btns">${last ? '' : `<button class="btn" style="background:${ENVCSS[CHAPTERS[ci + 1].id][0]}" onclick="G.playChapter(${ci + 1})">Kapitel ${ci + 2} starten ▶</button>`}<button class="btn sec" onclick="G.home()">Zur Startseite</button></div></div>`;
+    <p>${last ? `Du bist jetzt ${meister()}! 👑` : `💎 Dein Kristall hat das nächste Kapitel geöffnet – und die Welt „${c.title}“ für „Meine Welt“. Dort kannst du sie mit Stickern einrichten!`}</p>
+    <div class="btns">${last ? '' : `<button class="btn" style="background:${ENVCSS[CHAPTERS[ci + 1].id][0]}" onclick="G.playChapter(${ci + 1})">Kapitel ${ci + 2} starten ▶</button>`}<button class="btn sec" onclick="S.my.env='${c.id}';save();G.myWorld()">🏰 Neue Welt ansehen</button><button class="btn sec" onclick="G.home()">Zur Startseite</button></div></div>`;
   window.scrollTo(0, 0);
 }
 
@@ -266,10 +274,12 @@ function quizCheck() {
 function quit() { if (confirm('Wirklich abbrechen?')) { if (BZ) { clearInterval(BZ.timer); BZ = null; } home(); } }
 
 /* ---- Training mit Tierkarten ---- */
+const CARDINFO = 'So bekommst du Tierkarten: Wähle eine Welt und spiele ein Level. Löst du mindestens 6 von 8 Aufgaben (auf der Insel 7 von 10) gleich beim ersten Versuch richtig, gewinnst du die Tierkarte mit dem echten Tierfoto. Jede Welt hat 3 Tiere.';
 function trainMenu() {
   MODE = 'menu'; stage('home', 'home', [actor('polina', 34, 3, 42), actor('trophy', 58, 4, 34, 'pulse')]);
   const bossOpen = cardCount() >= 6;
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">Training</h1></div>
+  <p class="rule">🃏 ${CARDINFO}</p>
   <div class="chapters">${WORLDS.map((w, wi) => {
     const locked = w.boss && !bossOpen;
     return `<button class="chapter ${locked ? 'locked' : ''}" style="--a:${ENVCSS[w.id][0]};--b:${ENVCSS[w.id][1]}" onclick="${locked ? '' : `G.world(${wi})`}">
@@ -311,10 +321,17 @@ function trainDone(wi, li, first, N) {
   }
   window.scrollTo(0, 0);
 }
+function albumPlay(wi, li) {
+  const w = WORLDS[wi];
+  if (w.boss && cardCount() < 6) return say('Diese Welt öffnet sich, wenn du 6 Tierkarten hast.');
+  if (li > 0 && !starsOf(wi, li - 1)) return say(`Gewinne erst die Karte von Level ${li} in der Welt „${w.name}“.`);
+  train(wi, li);
+}
 function album() {
   MODE = 'menu'; stage('small', 'home', [actor('polina', 42, 3, 62), actor('trophy', 60, 4, 50, 'pulse')]);
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">Tieralbum · ${cardCount()}/21</h1></div>
-  <div class="album">${WORLDS.map((w, wi) => w.animals.map((a, li) => { const st = starsOf(wi, li); return st ? `<div class="acard"><img src="${photo(a)}" alt=""><div><b>${ANIMALS[a][0]} ${starStr(st)}</b><span>${ANIMALS[a][1]}</span></div></div>` : `<div class="acard hidcard"><img src="${photo(a)}" alt=""><div><b>???</b><span>${w.icon} ${w.name} · Level ${li + 1}</span></div></div>`; }).join('')).join('')}</div>`;
+  <p class="rule">🃏 ${CARDINFO} Tippe auf eine verdeckte Karte, um sie zu spielen.</p>
+  <div class="album">${WORLDS.map((w, wi) => w.animals.map((a, li) => { const st = starsOf(wi, li); return st ? `<div class="acard"><img src="${photo(a)}" alt=""><div><b>${ANIMALS[a][0]} ${starStr(st)}</b><span>${ANIMALS[a][1]}</span></div></div>` : `<button class="acard hidcard" onclick="G.albumPlay(${wi},${li})"><img src="${photo(a)}" alt=""><div><b>???</b><span>${w.icon} ${w.name} · Level ${li + 1}<br>▶ Im Training gewinnen</span></div></button>`; }).join('')).join('')}</div>`;
   window.scrollTo(0, 0);
 }
 
@@ -462,7 +479,7 @@ document.addEventListener('keydown', e => {
   else if (q.type === 'choice' && /^[1-4]$/.test(e.key) && +e.key <= q.options.length) choose(+e.key - 1);
   else if (q.type === 'line') { if (e.key === 'ArrowLeft') nudge(-1); if (e.key === 'ArrowRight') nudge(1); }
 });
-const G = { home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, nudge, check, quit, toggle };
+const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, nudge, check, quit, toggle };
 window.G = G;
 
 /* Offline: Service Worker speichert alle Dateien auf dem Gerät (braucht HTTPS oder localhost) */

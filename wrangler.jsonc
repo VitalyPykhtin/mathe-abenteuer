@@ -1,0 +1,11 @@
+// Cloudflare Workers: раздаёт статические файлы игры (без серверного кода).
+// Нужен и для production-деплоя из main, и для превью-сборок веток/PR.
+{
+  "name": "mathe-abenteuer",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "."
+  },
+  // Превью-сборки для веток и PR (`wrangler preview`); пустой блок = те же настройки.
+  "previews": {}
+}
