@@ -73,7 +73,7 @@ function stage(size, envKey, list, instant) {
   W3.setEnv(name, /2$/.test(envKey) ? 1 : 0); W3.setActors(list || [], instant); W3.talk(null);
   requestAnimationFrame(() => W3.resize());
 }
-const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span style="pointer-events:auto;cursor:pointer" onclick="event.stopPropagation();G.gemInfo()">💎 ${gemCount()}/${CHAPTERS.length}</span>${S.days > 1 ? `<span>🔥 ${S.days} Tage</span>` : ''}</div>`;
+const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span style="pointer-events:auto;cursor:pointer" onclick="event.stopPropagation();G.gemInfo()">💎 ${gemCount()}/${CHAPTERS.length}</span>${S.feather ? `<span>🪶 ${S.feather}</span>` : ''}${S.days > 1 ? `<span>🔥 ${S.days} Tage</span>` : ''}</div>`;
 const backBtn = (fn, label = '← Zurück') => `<button class="back" onclick="event.stopPropagation();${fn}">${label}</button>`;
 
 /* ===================== Aufgaben-Baustein ===================== */
@@ -90,7 +90,7 @@ function qHTML(q) {
   return `<div class="prompt">${q.q}</div>${q.visual ? `<div class="visual">${q.visual}</div>` : ''}${body}`;
 }
 function qMount(q, onReady) {
-  CUR = { q, sel: null, fields: null, active: 0, done: false, onReady: onReady || (() => {}) };
+  CUR = { q, sel: null, fields: null, active: 0, done: false, t0: Date.now(), onReady: onReady || (() => {}) };
   if (q.type === 'fields') { CUR.fields = q.parts.filter(p => typeof p === 'object').map(() => ''); drawFields(); }
   if (q.type === 'line') { drawLine(); $('#iline').addEventListener('pointerdown', e => { if (CUR.done) return; const r = $('#iline svg').getBoundingClientRect(), n = q.line.majors * q.line.sub, x = (e.clientX - r.left) / r.width * 1000; CUR.sel = Math.max(0, Math.min(n, Math.round((x - 55) / 890 * n))); sfx.tap(); drawLine(); }); }
   if (q.type === 'col') { CUR.cells = q.col.rows.map(r => Array(r.n).fill('')); CUR.pos = [0, q.col.rows[0].n - 1]; drawCol(); }
@@ -152,7 +152,37 @@ function qCheck(silent) {
 }
 const PRAISE = ['Richtig! 🎉', 'Super! ⭐', 'Genau! 👏', 'Klasse gemacht! 💪', 'Perfekt! 🌟', 'Stark! 🚀', 'Wow! 🤩'];
 const checkBtn = (color, label = 'Prüfen') => `<button id="check" class="btn" style="background:${color}" disabled onclick="G.check()">${label}</button><div id="fb"></div>`;
-const enableCheck = on => { const b = $('#check'); if (b) b.disabled = !on; };
+const enableCheck = on => { THINK.ready = on; const b = $('#check'); if (b) b.disabled = !on || Date.now() < THINK.until; };
+
+/* ===================== Eulen-Pause: hilft, wenn geraten statt gerechnet wird ===================== */
+/* Mehrere falsche Antworten hintereinander (schnelle zählen stärker) → Frau Eule bittet zur Denkpause:
+   Merkzettel zum Thema, einmal durchatmen, danach „Erst denken“-Sekunden vor dem Prüfen und eine Eulenfeder für die nächste richtige Antwort. */
+const THINK = { score: 0, slow: false, until: 0, ready: false, iv: null };
+function guessNote(ok) {
+  if (ok) { THINK.score = 0; return false; }
+  const ms = Date.now() - CUR.t0, fast = ms < (CUR.q.type === 'choice' ? 4000 : 3000);
+  THINK.score += fast ? 1.5 : 1; if (THINK.score < 2.5) return false; THINK.score = 0; return true;
+}
+function thinkBreak(topic, then) {
+  const w = WORLDS.find(x => x.id === topic) || WORLDS[0], line = pick(['Schuhu! Halt, nicht raten – zusammen kriegen wir das hin.', 'Schuhu! Schnell tippen hilft hier nicht. Wir schauen uns das in Ruhe an.', 'Schuhu! Auch Meisterinnen machen mal Pause. Lies erst meinen Merkzettel.']);
+  const d = document.createElement('div'); d.className = 'think'; d.id = 'think';
+  d.innerHTML = `<div class="thinkbox"><div class="thinktop"><img src="${eimg('owl')}" alt=""><div><h2>Eulen-Pause</h2><p>${line}</p></div></div>
+    <div class="rule"><b>📜 Merkzettel: ${TOPIC[w.id] || w.topic}</b><br>${w.rule}</div>
+    <div class="breath"><i></i><span id="breathtxt">Atme mit dem Stern ein …</span></div>
+    <p class="hint">🪶 Für die nächste richtige Antwort schenkt dir Frau Eule eine <b>Eulenfeder</b> und 2 Münzen extra.</p>
+    <button class="btn" id="thinkgo" style="background:#7c3aed" disabled>Gleich geht es weiter …</button></div>`;
+  document.body.appendChild(d); sfx.page(); speak(line + ' ' + w.rule.replace(/<[^>]+>/g, ' '), 'eule');
+  let k = 0; const words = ['Atme mit dem Stern ein …', '… und langsam wieder aus.', 'Noch einmal ein …', '… und aus. Jetzt bist du bereit!'];
+  const iv = setInterval(() => { k++; const t = $('#breathtxt'); if (!t) return clearInterval(iv); if (k < 4) t.textContent = words[k]; else { clearInterval(iv); const b = $('#thinkgo'); b.disabled = false; b.textContent = 'Ich denke jetzt nach 💪'; b.onclick = () => { d.remove(); if (window.speechSynthesis) speechSynthesis.cancel(); THINK.slow = true; then(); }; } }, 2000);
+}
+/* nach der Pause: ein paar Sekunden „erst denken“, bevor man prüfen kann */
+function thinkDelay() {
+  clearInterval(THINK.iv); const b = $('#check'); if (!THINK.slow || !b) { THINK.until = 0; return; }
+  const label = b.textContent; let n = 6; THINK.until = Date.now() + n * 1000; b.disabled = true; b.textContent = `🦉 Erst denken … ${n}`;
+  THINK.iv = setInterval(() => { const c = $('#check'); n--; if (!c || c !== b) { clearInterval(THINK.iv); THINK.until = 0; return; } if (n > 0) { b.textContent = `🦉 Erst denken … ${n}`; return; } clearInterval(THINK.iv); THINK.until = 0; b.textContent = label; b.disabled = !THINK.ready || (CUR && CUR.done); }, 1000);
+}
+/* richtige Antwort nach der Pause → Eulenfeder */
+function thinkReward() { if (!THINK.slow) return ''; THINK.slow = false; S.feather = (S.feather || 0) + 1; coins(2, true); save(); return `<p class="feather">🪶 Eulenfeder Nr. ${S.feather}! Nachdenken lohnt sich. +2 🪙</p>`; }
 
 /* ===================== Start: Heldin wählen ===================== */
 function chooseHero() {
@@ -194,7 +224,7 @@ function home() {
 let ST = null;
 const GEMINFO = 'Für jedes geschaffte Kapitel bekommst du einen Zahlenkristall (in Teil 2 einen Sternsplitter) und 20 🪙. Er öffnet das nächste Kapitel, eine neue 3D-Welt und ein neues Sticker-Paket in „Meine Welt“. Mit allen 7 Kristallen rettest du das Zahlenland – und mit allen 8 Sternsplittern leuchtet der Rechenstern wieder!';
 const gemInfo = () => say(GEMINFO);
-const chOpen = i => i === 0 || partOf(CHAPTERS[i]) !== partOf(CHAPTERS[i - 1]) || !!S.done[CHAPTERS[i - 1].id];
+const chOpen = i => i === 0 || !!S.done[CHAPTERS[i - 1].id];
 const gemImg = c => partOf(c) ? 'glowing_star' : 'gem_stone';
 const chStars = c => { const n = c.scenes.filter(s => s.g).length, f = c.scenes.filter((s, i) => S.sf[c.id + '-' + i] === 1).length, r = f / n; return !S.done[c.id] ? 0 : r >= 0.95 ? 3 : r >= 0.7 ? 2 : 1; };
 function storyMenu() {
@@ -210,7 +240,7 @@ function storyMenu() {
   };
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">Geschichte</h1></div>
   <p class="rule">💎 ${GEMINFO}</p>
-  ${PARTS.map((P, p) => `<h2 class="parth">${P.title}<small>${P.sub}</small></h2><div class="chapters">${CHAPTERS.map((c, i) => partOf(c) === p ? card(c, i) : '').join('')}</div>`).join('')}`;
+  ${PARTS.map((P, p) => `<h2 class="parth">${P.title}<small>${p && !chOpen(CHAPTERS.findIndex(c => partOf(c) === p)) ? '🔒 Öffnet sich, wenn du Teil ' + p + ' geschafft hast. Üben kannst du die Themen schon jetzt im Training!' : P.sub}</small></h2><div class="chapters">${CHAPTERS.map((c, i) => partOf(c) === p ? card(c, i) : '').join('')}</div>`).join('')}`;
   window.scrollTo(0, 0);
 }
 function playChapter(ci) { const c = CHAPTERS[ci]; playScene(ci, S.done[c.id] ? 0 : Math.min(S.story[c.id] || 0, c.scenes.length - 1)); }
@@ -279,7 +309,7 @@ function sTask() {
   const intro = T((ST.way && ST.way.intro) || (Array.isArray(sc.steps) && sc.steps[ST.step]) || sc.intro || 'Löse die Aufgabe!'); $('#cap').innerHTML = `<img src="${eimg('scroll')}" alt=""><div class="narr"><p>${intro}</p></div>`; speak(intro);
   const timed = sc.time && !ST.slow;
   $('#task').innerHTML = `<div class="card">${n > 1 ? `<div class="pips">${ST.gens.map((_, i) => `<span class="${i < ST.step ? 'done' : i === ST.step ? 'cur' : ''}">${i < ST.step ? pip[1] : pip[0]}</span>`).join('')}</div>` : ''}${timed ? `<div class="tbar"><i id="tbar"></i><span>${sc.timeIcon || '⏳'}</span></div>` : ''}${ST.first && !ST.slow ? '' : '<div class="badge">🔁 Neuer Versuch – ganz in Ruhe</div>'}${qHTML(q)}${checkBtn(ENVCSS[c.id][0])}</div>`;
-  qMount(q, enableCheck); document.body.style.setProperty('--sh', '32vh');
+  qMount(q, enableCheck); document.body.style.setProperty('--sh', '32vh'); thinkDelay();
   if (timed) { ST.left = sc.time; ST.timer = setInterval(() => { if (MODE !== 'story' || !$('#tbar')) return stopTimer(); ST.left -= 0.25; $('#tbar').style.width = Math.max(0, ST.left / sc.time * 100) + '%'; if (ST.left <= 5 && ST.left % 1 === 0 && ST.left > 0) tone([880], 0.05, 'square', 0.04); if (ST.left <= 0) sLate(); }, 250); }
 }
 function sLate() {
@@ -291,10 +321,10 @@ function sLate() {
 }
 function sCheck() {
   if (CUR.done) return; const r = qCheck(); if (!r) return; stopTimer();
-  const c = CHAPTERS[ST.ci], sc = c.scenes[ST.si], k = c.id + '-' + ST.si, b = $('#check'); record(ST.t, r.ok);
+  const c = CHAPTERS[ST.ci], sc = c.scenes[ST.si], k = c.id + '-' + ST.si, b = $('#check'); record(ST.t, r.ok); const guess = guessNote(r.ok), fea = r.ok ? thinkReward() : '';
   if (r.ok && ST.step + 1 < ST.gens.length) { // Zwischenschritt geschafft
     sfx.ok(); W3.celebrate(c.hue); const cur = document.querySelector('.pips .cur'); if (cur) { cur.textContent = (sc.pip || ['🔒', '🔓'])[1]; cur.classList.add('done', 'fresh'); }
-    $('#fb').innerHTML = `<div class="fb good"><h3>${pick(PRAISE)}</h3><p>${ST.step + 1} von ${ST.gens.length} geschafft – weiter so!</p></div>`;
+    $('#fb').innerHTML = `<div class="fb good"><h3>${pick(PRAISE)}</h3><p>${ST.step + 1} von ${ST.gens.length} geschafft – weiter so!</p>${fea}</div>`;
     b.textContent = 'Weiter ▶'; b.disabled = false; b.onclick = () => { ST.step++; sTask(); }; return;
   }
   if (r.ok) {
@@ -302,13 +332,13 @@ function sCheck() {
     S.story[c.id] = Math.max(S.story[c.id] || 0, ST.si + 1); save();
     const pay = (ST.first ? 3 : 1) + (ST.way && ST.first ? (ST.way.coins || 3) - 3 : 0) + (ST.gens.length > 1 ? ST.gens.length - 1 : 0);
     sfx.ok(); W3.celebrate(c.hue); coins(pay); if (sc.win) sc.win.forEach(direct);
-    $('#fb').innerHTML = `<div class="fb good"><h3>${pick(PRAISE)}</h3><p>🔓 Die nächste Szene ist freigeschaltet!</p>${sc.bonus ? `<button class="bonus" id="bonus" onclick="G.sBonus()">${BONUS[sc.bonus][0]}</button>` : ''}</div>`;
+    $('#fb').innerHTML = `<div class="fb good"><h3>${pick(PRAISE)}</h3><p>🔓 Die nächste Szene ist freigeschaltet!</p>${fea}${sc.bonus ? `<button class="bonus" id="bonus" onclick="G.sBonus()">${BONUS[sc.bonus][0]}</button>` : ''}</div>`;
     b.textContent = 'Nächste Szene ▶'; b.disabled = false; b.onclick = () => playScene(ST.ci, ST.si + 1);
     const nx = document.querySelectorAll('.strip button')[ST.si + 1]; if (nx) { nx.classList.remove('lock'); nx.textContent = ST.si + 2; nx.classList.add('fresh'); }
   } else {
     sfx.bad(); ST.first = false; ST.slow = true; W3.sad(); W3.emote('finn', '💡');
     $('#fb').innerHTML = `<div class="fb bad"><h3>Noch nicht ganz – schau mal:</h3>${r.sol}${CUR.q.explain}</div>`;
-    b.textContent = '🔁 Neue Aufgabe versuchen'; b.disabled = false; b.onclick = () => sTask();
+    b.textContent = guess ? '🦉 Erst zu Frau Eule' : '🔁 Neue Aufgabe versuchen'; b.disabled = false; b.onclick = () => guess ? thinkBreak(ST.t, sTask) : sTask();
     setTimeout(() => $('#fb').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
   }
 }
@@ -343,18 +373,19 @@ function quizRender() {
   app.innerHTML = `<div class="stagehit"></div><div class="quiz">
     <div class="topbar">${backBtn('G.quit()', '✕')}<div class="track"><div class="fill" style="width:${pct}%;background:${QZ.color}"></div><img class="runner" src="${eimg(S.hero)}" style="left:${pct}%" alt=""><span class="haus">🏁</span></div><span class="streak ${QZ.streak >= 2 ? 'on' : ''}">🔥 ${QZ.streak}</span></div>
     <div class="card">${it.retry ? '<div class="badge">🔁 Zweite Chance</div>' : ''}${qHTML(it.q)}${checkBtn(QZ.color)}</div></div>`;
-  qMount(it.q, enableCheck); window.scrollTo(0, 0);
+  qMount(it.q, enableCheck); window.scrollTo(0, 0); thinkDelay();
 }
+function quizNext() { QZ.i++; if (QZ.i < QZ.queue.length) quizRender(); else QZ.finish(QZ.first, QZ.N); }
 function quizCheck() {
-  if (CUR.done) { QZ.i++; if (QZ.i < QZ.queue.length) quizRender(); else QZ.finish(QZ.first, QZ.N); return; }
-  const r = qCheck(); if (!r) return; const it = QZ.queue[QZ.i]; record(it.t, r.ok);
+  if (CUR.done) { if (QZ.guess && QZ.i + 1 < QZ.queue.length) { QZ.guess = false; return thinkBreak(QZ.queue[QZ.i].t, quizNext); } return quizNext(); }
+  const r = qCheck(); if (!r) return; const it = QZ.queue[QZ.i]; record(it.t, r.ok); QZ.guess = guessNote(r.ok); const fea = r.ok ? thinkReward() : '';
   if (r.ok) { QZ.streak++; if (!it.retry) QZ.first++; sfx.ok(); W3.celebrate(); coins(1, true); if (QZ.streak % 5 === 0) confetti(30); }
   else { QZ.streak = 0; sfx.bad(); W3.sad(); if (!it.retry) QZ.queue.push({ gen: it.gen, t: it.t, q: it.gen(), retry: true }); }
   const se = $('.streak'); se.textContent = '🔥 ' + QZ.streak; se.classList.toggle('on', QZ.streak >= 2);
   const pct = (QZ.i + 1) / QZ.queue.length * 100; $('.fill').style.width = pct + '%'; $('.runner').style.left = pct + '%';
-  $('#fb').innerHTML = r.ok ? `<div class="fb good"><h3>${pick(PRAISE)}${QZ.streak >= 3 ? ` &nbsp;${QZ.streak} in Folge!` : ''}</h3></div>`
+  $('#fb').innerHTML = r.ok ? `<div class="fb good"><h3>${pick(PRAISE)}${QZ.streak >= 3 ? ` &nbsp;${QZ.streak} in Folge!` : ''}</h3>${fea}</div>`
     : `<div class="fb bad"><h3>Noch nicht ganz – schau mal:</h3>${r.sol}${it.q.explain}${it.retry ? '' : '<p class="again">🔁 So eine Aufgabe kommt am Ende nochmal.</p>'}</div>`;
-  const b = $('#check'); b.textContent = QZ.i + 1 < QZ.queue.length ? 'Weiter →' : 'Fertig! 🏁'; b.disabled = false;
+  const b = $('#check'); b.textContent = QZ.guess && QZ.i + 1 < QZ.queue.length ? '🦉 Erst zu Frau Eule' : QZ.i + 1 < QZ.queue.length ? 'Weiter →' : 'Fertig! 🏁'; b.disabled = false;
   if (!r.ok) setTimeout(() => $('#fb').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
 }
 function quit() { if (confirm('Wirklich abbrechen?')) { if (BZ) { clearInterval(BZ.timer); BZ = null; } home(); } }
@@ -460,7 +491,7 @@ function blitzIntro() {
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">⚡ Blitz-Runde</h1></div><div class="panel"><h2>90 Sekunden. So viele Aufgaben wie möglich!</h2><p class="hint">Jede richtige Antwort gibt einen Punkt und eine Münze. Dein Rekord: <b>${S.blitz}</b></p><button class="btn" style="background:#ea580c" onclick="G.blitz()">Auf die Plätze … los!</button>${picker(blitzIntro)}</div>`;
 }
 function blitz() {
-  MODE = 'blitz'; BZ = { left: 90, score: 0, n: 0, lock: false, ts: selT() };
+  THINK.slow = false; THINK.until = 0; MODE = 'blitz'; BZ = { left: 90, score: 0, n: 0, lock: false, ts: selT() };
   stage('small', 'savanne', [actor('polina', 40, 3, 62, 'hop'), actor('high_voltage', 60, 6, 50, 'pulse')]);
   app.innerHTML = `<div class="stagehit"></div><div class="quiz"><div class="topbar">${backBtn('G.quit()', '✕')}<div class="track"><div class="fill" id="tfill" style="width:100%;background:#ea580c"></div></div><span class="streak on" id="bscore">⚡ 0</span></div><div class="card" id="bcard"></div></div>`;
   BZ.timer = setInterval(() => { BZ.left--; const f = $('#tfill'); if (f) f.style.width = BZ.left / 90 * 100 + '%'; if (BZ.left <= 10 && BZ.left > 0) tone([880], 0.05, 'square', 0.04); if (BZ.left <= 0) blitzEnd(); }, 1000);
@@ -497,7 +528,7 @@ function examIntro() {
   const ts = selT();
   app.innerHTML = `<div class="stagehit">${backBtn('G.home()')}<h1 class="title">📝 Klassenarbeit</h1></div><div class="panel"><h2>Probe-Klassenarbeit mit ${examN(ts.length)} Aufgaben</h2><p class="hint">Wie in der Schule: Du siehst erst am Ende, was richtig war – und bekommst eine Note. ${S.exam ? `Deine beste Note bisher: <b>${S.exam}</b>` : ''}</p><button class="btn" style="background:#0f766e" onclick="G.exam()">Klassenarbeit beginnen</button>${picker(examIntro)}</div>`;
 }
-function exam() { MODE = 'exam'; EX = { items: examItems(), i: 0, ok: 0, wrong: [] }; stage('small', 'berge', [actor('polina', 40, 3, 62), actor('memo', 60, 6, 48)]); examRender(); }
+function exam() { THINK.slow = false; THINK.until = 0; MODE = 'exam'; EX = { items: examItems(), i: 0, ok: 0, wrong: [] }; stage('small', 'berge', [actor('polina', 40, 3, 62), actor('memo', 60, 6, 48)]); examRender(); }
 function examRender() {
   const it = EX.items[EX.i], n = EX.items.length;
   app.innerHTML = `<div class="stagehit"></div><div class="quiz"><div class="topbar">${backBtn('G.quit()', '✕')}<div class="track"><div class="fill" style="width:${EX.i / n * 100}%;background:#0f766e"></div></div><span class="streak on">${EX.i + 1}/${n}</span></div>

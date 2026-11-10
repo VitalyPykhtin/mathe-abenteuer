@@ -253,3 +253,13 @@ button:not(:disabled):active,.caption:active{transform:scale(.94);filter:brightn
 .keys button:active,.cc:active,.field:active{background:#93c5fd}
 .shoph{font-family:var(--head);font-size:1.05rem;margin:16px 4px 8px;color:#334155}.shoph.off{color:#94a3b8;font-size:.95rem}
 .shop .lockd{opacity:.55}.shop .lockd img{filter:grayscale(1) brightness(.55) blur(1.5px)}
+/* Eulen-Pause */
+.think{position:fixed;inset:0;z-index:80;background:rgba(30,20,70,.72);display:grid;place-items:center;padding:14px;overflow:auto;animation:pop .25s}
+.thinkbox{background:#fff;border-radius:28px;padding:20px;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.thinktop{display:flex;gap:14px;align-items:center;margin-bottom:12px}.thinktop img{width:92px;height:92px;animation:nudgeY2 2s infinite}
+.thinktop h2{font-family:var(--head);color:#6d28d9;font-size:1.6rem}.thinktop p{font-size:1.1rem;line-height:1.35}
+.thinkbox .rule{background:#fef9c3;box-shadow:none;border:3px dashed #eab308;margin-bottom:12px}
+.breath{display:flex;align-items:center;gap:16px;justify-content:center;min-height:84px;color:#6d28d9;font-family:var(--head);font-size:1.15rem}
+.breath i{width:44px;height:44px;border-radius:50%;background:radial-gradient(#fde047,#f59e0b);box-shadow:0 0 24px #fde047;animation:breath 4s ease-in-out infinite;flex:none}
+@keyframes breath{0%,100%{transform:scale(.7)}50%{transform:scale(1.7)}}
+.feather{background:#ede9fe;color:#5b21b6;border-radius:12px;padding:6px 12px;display:inline-block;font-weight:800}
