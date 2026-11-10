@@ -15,8 +15,10 @@ All photos come from [Wikimedia Commons](https://commons.wikimedia.org) and are 
 | `img/chamaeleon.jpg` | [Panther chameleon (Furcifer pardalis) male Nosy Be.jpg](https://commons.wikimedia.org/wiki/File:Panther_chameleon_(Furcifer_pardalis)_male_Nosy_Be.jpg) | Charles J. Sharp | CC BY-SA 4.0 |
 | `img/clownfisch.jpg` | [Amphiprion ocellaris (Clown anemonefish) by Nick Hobgood.jpg](https://commons.wikimedia.org/wiki/File:Amphiprion_ocellaris_%28Clown_anemonefish%29_by_Nick_Hobgood.jpg) | Nick Hobgood | CC BY-SA 3.0 |
 | `img/delfin.jpg` | [010 Atlantic bottlenose dolphin jumping at Pelican point Photo by Giles Laurent.jpg](https://commons.wikimedia.org/wiki/File:010_Atlantic_bottlenose_dolphin_jumping_at_Pelican_point_Photo_by_Giles_Laurent.jpg) | Giles Laurent | CC BY-SA 4.0 |
+| `img/dromedar.jpg` | [Camello, desierto de Wahiba, Omán, 2024-08-17, DD 20.jpg](https://commons.wikimedia.org/wiki/File:Camello,_desierto_de_Wahiba,_Om%C3%A1n,_2024-08-17,_DD_20.jpg) | Diego Delso | CC BY-SA 4.0 |
 | `img/eichhoernchen.jpg` | [Squirrel posing.jpg](https://commons.wikimedia.org/wiki/File:Squirrel_posing.jpg) | Peter Trimming | CC BY 2.0 |
 | `img/eisbaer.jpg` | [Polar Bear AdF.jpg](https://commons.wikimedia.org/wiki/File:Polar_Bear_AdF.jpg) | Arturo de Frias Marques | CC BY-SA 4.0 |
+| `img/eisvogel.jpg` | [Common kingfisher in Japan, January 2019 - 谷崎7303.jpg](https://commons.wikimedia.org/wiki/File:Common_kingfisher_in_Japan,_January_2019_-_%E8%B0%B7%E5%B4%8E7303.jpg) | 谷崎かおる | Public domain |
 | `img/erdmaennchen.jpg` | [Meerkat (Suricata suricatta) Tswalu.jpg](https://commons.wikimedia.org/wiki/File:Meerkat_%28Suricata_suricatta%29_Tswalu.jpg) | Charles J. Sharp | CC BY-SA 4.0 |
 | `img/esel.jpg` | [Azen.JPG](https://commons.wikimedia.org/wiki/File:Azen.JPG) | Ex-Smith | CC BY-SA 3.0 |
 | `img/faultier.jpg` | [MC Drei-Finger-Faultier.jpg](https://commons.wikimedia.org/wiki/File:MC_Drei-Finger-Faultier.jpg) | Christian Mehlführer, User:Chmehl | CC BY 2.5 |
@@ -47,6 +49,7 @@ All photos come from [Wikimedia Commons](https://commons.wikimedia.org) and are 
 | `img/storch.jpg` | [01 Ws ThMüller Weißstörche auf Nest.jpg](https://commons.wikimedia.org/wiki/File:01_Ws_ThM%C3%BCller_Wei%C3%9Fst%C3%B6rche_auf_Nest.jpg) | Thomueller | CC BY-SA 4.0 |
 | `img/tiger.jpg` | [Bengal tiger in Sanjay Dubri Tiger Reserve December 2024 by Tisha Mukherjee 15.jpg](https://commons.wikimedia.org/wiki/File:Bengal_tiger_in_Sanjay_Dubri_Tiger_Reserve_December_2024_by_Tisha_Mukherjee_15.jpg) | Tisha Mukherjee | CC BY-SA 4.0 |
 | `img/tukan.jpg` | [Toco Toucan (Ramphastos toco) - 48153967707.jpg](https://commons.wikimedia.org/wiki/File:Toco_Toucan_%28Ramphastos_toco%29_-_48153967707.jpg) | Bernard DUPONT | CC BY-SA 2.0 |
+| `img/uhu.jpg` | [Bubo bubo hispanus, Rosas, Madrid, Spain 1.jpg](https://commons.wikimedia.org/wiki/File:Bubo_bubo_hispanus,_Rosas,_Madrid,_Spain_1.jpg) | saranavarro | CC BY 4.0 |
 | `img/waschbaer.jpg` | [Curious Raccoon.jpg](https://commons.wikimedia.org/wiki/File:Curious_Raccoon.jpg) | Paxson Woelber | CC BY-SA 3.0 |
 
 ## Other assets

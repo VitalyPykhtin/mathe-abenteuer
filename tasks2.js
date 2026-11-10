@@ -659,7 +659,7 @@ Object.assign(ANIMALS, {
   braunbaer: ['Braunbär', 'Ein Braunbär riecht Honig aus mehreren Kilometern Entfernung.'],
   schwan: ['Höckerschwan', 'Ein Schwan hat rund 25 000 Federn.'],
   pfau: ['Pfau', 'Die Schleppe eines Pfaus hat etwa 150 Federn mit schillernden „Augen“.'],
-  reh: ['Rehkitz', 'Rehkitze haben weiße Punkte im Fell – so sind sie im Gras fast unsichtbar.'],
+  eisvogel: ['Eisvogel', 'Der Eisvogel stürzt sich wie ein blauer Pfeil ins Wasser und fängt kleine Fische.'],
   dromedar: ['Dromedar', 'Ein durstiges Dromedar trinkt über 100 Liter Wasser in zehn Minuten.'],
   fennek: ['Wüstenfuchs', 'Mit seinen riesigen Ohren gibt der Fennek Wärme ab – wie mit einer Klimaanlage.'],
   chamaeleon: ['Chamäleon', 'Ein Chamäleon kann seine Augen unabhängig voneinander bewegen.'],
@@ -699,7 +699,7 @@ WORLDS.push(
       [genUmrechnen('kg', 't', 'l'), genKomma('kg', 'm'), genZeit, genGroessenRechnen, genUmrechnen('km', 'm', 'cm'), genKomma('l', 'km'), genEinheit, genZeit],
       [genKomma('kg', 'm', 'l', 'km'), genGroessenOrdnen, genZeit, genGroessenRechnen, genKomma('kg', 'm', 'cm'), genGroessenOrdnen, genUmrechnen('t', 'km', 'l', 'cm'), genZeit],
     ] },
-  { id: 'schloss', part: 1, name: 'Schlossgarten', topic: 'Umfang, Flächeninhalt, Maßstab', icon: '🏰', color: '#7c3aed', animals: ['schwan', 'pfau', 'reh'],
+  { id: 'schloss', part: 1, name: 'Schlossgarten', topic: 'Umfang, Flächeninhalt, Maßstab', icon: '🏰', color: '#7c3aed', animals: ['schwan', 'pfau', 'eisvogel'],
     rule: `<b>Umfang:</b> einmal außen herum – alle Seiten addieren.<br><b>Flächeninhalt:</b> wie viele Einheitsquadrate passen hinein? Beim Rechteck: Länge · Breite.<br><b>Maßstab 1 : 100:</b> 1 cm auf dem Plan = 100 cm = 1 m in echt.`,
     levels: [
       [genUmfang, genFlaeche, genUoderA, genUmfang, genFlaeche, genUoderA],
