@@ -597,10 +597,36 @@ function sticker(f, price) {
   const it = { id: 's' + Date.now(), k: f, x: 20 + Math.random() * 60, y: 3, s: 30, f: false }; S.my.items.push(it); MY.sel = it.id; save(); myStage(); W3.celebrate(); myTools(); myShop(); sfx.ok(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 /* Versteckt für Eltern: Titel auf der Startseite 3 Sekunden gedrückt halten (oder #reset an die Adresse hängen), dann RESET eintippen */
+/* Eltern-Bereich: Fortschritt sichern, wiederherstellen oder löschen */
+const VERSION = '13';
+const packSave = () => 'MA1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+function unpackSave(code) {
+  const m = String(code).replace(/\s+/g, '').match(/MA1:([A-Za-z0-9+/=]+)/); if (!m) return null;
+  try { const o = JSON.parse(decodeURIComponent(escape(atob(m[1])))); return o && typeof o === 'object' && typeof o.hero === 'string' && o.stars && o.done ? o : null; } catch (e) { return null; }
+}
 function resetAll() {
-  const a = prompt('Eltern-Bereich: Um ALLES zu löschen (Münzen, Kristalle, Tierkarten, Welt), hier RESET eintippen:');
-  if (!a || a.trim().toUpperCase() !== 'RESET') return;
-  try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.hash = ''; location.reload();
+  if ($('#parent')) return; const d = document.createElement('div'); d.className = 'think'; d.id = 'parent';
+  d.innerHTML = `<div class="thinkbox"><div class="thinktop"><img src="${eimg('key')}" alt=""><div><h2>Eltern-Bereich</h2><p>Version ${VERSION} · 💎 ${gemCount()}/${CHAPTERS.length} · 🃏 ${cardCount()}/${CARDS} · 🪙 ${S.coins}</p></div></div>
+    <p class="hint"><b>Fortschritt sichern:</b> Der Code unten enthält den ganzen Spielstand. Kopiere ihn und bewahre ihn auf (z.&nbsp;B. in den Notizen oder per Nachricht an dich selbst).</p>
+    <textarea id="pcode" readonly rows="4">${packSave()}</textarea>
+    <div class="btns"><button class="btn" style="background:#0f766e" onclick="G.parent('copy')">📋 Code kopieren</button>${navigator.share ? '<button class="btn" style="background:#0369a1" onclick="G.parent(\'share\')">📤 Teilen …</button>' : ''}</div>
+    <p class="hint" style="margin-top:18px"><b>Fortschritt wiederherstellen:</b> Gesicherten Code hier einfügen. Der jetzige Spielstand auf diesem Gerät wird ersetzt.</p>
+    <textarea id="pin" rows="3" placeholder="MA1:…"></textarea>
+    <div class="btns"><button class="btn" style="background:#7c3aed" onclick="G.parent('restore')">♻️ Wiederherstellen</button></div>
+    <div class="btns" style="margin-top:18px"><button class="btn sec bordered" onclick="G.parent('wipe')">🗑 Alles löschen</button><button class="btn sec bordered" onclick="G.parent('close')">Schließen</button></div></div>`;
+  document.body.appendChild(d);
+}
+function parent(a) {
+  const d = $('#parent'); if (!d) return;
+  if (a === 'close') return d.remove();
+  if (a === 'copy') { const t = $('#pcode'); t.focus(); t.select(); t.setSelectionRange(0, 99999); const done = () => toast('✅ Code kopiert. Jetzt irgendwo sicher einfügen!'); if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(done, () => { try { document.execCommand('copy'); done(); } catch (e) { toast('Bitte den Code von Hand markieren und kopieren.'); } }); else { try { document.execCommand('copy'); done(); } catch (e) { toast('Bitte den Code von Hand markieren und kopieren.'); } } return; }
+  if (a === 'share') return void navigator.share({ title: 'Mathe-Abenteuer Spielstand', text: packSave() }).catch(() => {});
+  if (a === 'restore') {
+    const o = unpackSave($('#pin').value); if (!o) return toast('❌ Das ist kein gültiger Code. Bitte den ganzen Code einfügen (beginnt mit MA1:).');
+    if (!confirm(`Spielstand von „${o.name || '?'}“ wiederherstellen (${Object.keys(o.done).length} Kapitel, ${o.coins || 0} Münzen)? Der jetzige Spielstand auf diesem Gerät wird ersetzt.`)) return;
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { return toast('❌ Speichern nicht möglich.'); } location.hash = ''; location.reload(); return;
+  }
+  if (a === 'wipe') { const x = prompt('Um ALLES zu löschen (Münzen, Kristalle, Tierkarten, Welt), hier RESET eintippen:'); if (!x || x.trim().toUpperCase() !== 'RESET') return; try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.hash = ''; location.reload(); }
 }
 let holdT = null;
 document.addEventListener('pointerdown', e => { if (e.target.id === 'hometitle') holdT = setTimeout(resetAll, 3000); });
@@ -615,7 +641,7 @@ function say(t) { toast(t); speak(t); }
 function check() { if (MODE === 'story') sCheck(); else if (MODE === 'quiz') quizCheck(); else if (MODE === 'blitz') blitzCheck(); else if (MODE === 'exam') examCheck(); }
 function toggle(k, inScene) { S[k] = !S[k]; save(); if (k === 'voice' && !S.voice && window.speechSynthesis) speechSynthesis.cancel(); if (inScene) { event.target.textContent = S.voice ? '🗣️' : '🤐'; } else home(); }
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || $('#parent') || $('#think')) return;
   if (MODE === 'story' && ST && ST.phase === 'talk' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); return sNext(); }
   if (!CUR || !['story', 'quiz', 'blitz', 'exam'].includes(MODE)) return;
   if (e.key === 'Enter') { const b = $('#check'); if (b && !b.disabled) { e.preventDefault(); b.click(); } return; }
@@ -624,7 +650,7 @@ document.addEventListener('keydown', e => {
   else if (q.type === 'choice' && /^[1-4]$/.test(e.key) && +e.key <= q.options.length) choose(+e.key - 1);
   else if (q.type === 'line') { if (e.key === 'ArrowLeft') nudge(-1); if (e.key === 'ArrowRight') nudge(1); }
 });
-const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, nudge, check, quit, toggle };
+const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, parent, nudge, check, quit, toggle };
 window.G = G;
 
 /* Offline: Service Worker speichert alle Dateien auf dem Gerät (braucht HTTPS oder localhost) */

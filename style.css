@@ -263,3 +263,6 @@ button:not(:disabled):active,.caption:active{transform:scale(.94);filter:brightn
 .breath i{width:44px;height:44px;border-radius:50%;background:radial-gradient(#fde047,#f59e0b);box-shadow:0 0 24px #fde047;animation:breath 4s ease-in-out infinite;flex:none}
 @keyframes breath{0%,100%{transform:scale(.7)}50%{transform:scale(1.7)}}
 .feather{background:#ede9fe;color:#5b21b6;border-radius:12px;padding:6px 12px;display:inline-block;font-weight:800}
+/* Eltern-Bereich */
+#parent textarea{width:100%;font:600 .8rem/1.3 ui-monospace,Menlo,monospace;border:3px solid #cbd5e1;border-radius:12px;padding:8px;resize:none;word-break:break-all;-webkit-user-select:text;user-select:text;font-size:16px}
+#parent .btns .btn{margin-top:8px;font-size:1.05rem;padding:11px 18px}
