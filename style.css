@@ -160,6 +160,7 @@ svg.zk{width:100%;max-width:400px}
 .acard b{display:block;font-family:var(--head);font-size:1.35rem}
 .acard span{font-weight:600;font-size:.98rem;line-height:1.4}
 .acard .stars{display:inline;font-size:1rem}.acard .stars .off{color:#d1d5db}
+.acard.hidcard{display:block;width:100%;padding:0;font:inherit;cursor:pointer}
 .acard.hidcard img{filter:grayscale(1) brightness(.25) blur(10px)}
 .acard.flip{animation:flip .9s ease-out}
 @keyframes flip{0%{transform:perspective(900px) rotateY(180deg) scale(.6);opacity:0}60%{transform:perspective(900px) rotateY(-12deg) scale(1.05);opacity:1}100%{transform:none}}
