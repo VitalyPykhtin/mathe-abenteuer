@@ -193,7 +193,7 @@ const CHAPTERS = [
     { bg: 'insel', a: 'polina@14 finn@32 gem@52,30*28!pulse wirbel@74!hop',
       l: ['wirbel: Ich hab’s verstanden! Mathe ist ja gar keine Zauberei.', 'wirbel: Hier ist der letzte Kristall. Es tut mir leid, dass ich sie genommen habe.', 'polina: Schon gut, Wirbel. Komm, wir bringen sie zusammen zurück!'] },
     { bg: 'home', a: 'rainbow@50,50*50!pulse polina@40 finn@56!hop wirbel@70!hop nelli@8!hop pia@22!hop leo@84*40 trophy@50,6*22!pulse party@92,50*18!shake',
-      l: ['N: Alle sieben Kristalle leuchten. Ein Regenbogen spannt sich über das ganze Zahlenland!', 'finn: Die Zahlen sind wieder in Ordnung. Du hast das Zahlenland gerettet!', 'N: Und {name}? {Sie} ist jetzt {meisterin}. ENDE.'] },
+      l: ['N: Alle sieben Kristalle leuchten. Ein Regenbogen spannt sich über das ganze Zahlenland!', 'finn: Die Zahlen sind wieder in Ordnung. Du hast das Zahlenland gerettet!', 'N: Und {name}? {Sie} ist jetzt {meisterin}. ENDE … von Teil 1!'] },
   ] },
 ];
 

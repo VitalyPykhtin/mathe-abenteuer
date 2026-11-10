@@ -198,3 +198,56 @@ input{-webkit-user-select:text;user-select:text;font-size:16px}
 .shop .in{background:#dbeafe;border-color:#93c5fd}.shop .in img{filter:none}.shop span{font-size:.78rem}
 .mytools{max-width:94%;white-space:normal;text-align:center}.mytools .delb{width:auto;padding:0 14px;background:#fecaca;border-radius:999px;font-size:1rem}
 .btn.bordered{border:3px solid #cbd5e1;box-shadow:none;font-size:1rem;padding:10px}
+
+/* ===== Teil 2 ===== */
+.parth{font-family:var(--head);color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45);font-size:1.5rem;margin:22px 4px 10px}
+.parth small{display:block;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;opacity:.95}
+/* Themen-Auswahl */
+.pick{margin-top:22px;border-top:3px dashed #cbd5e1;padding-top:6px}
+.pickrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.chip{background:#f1f5f9;border:3px solid #e2e8f0;border-radius:999px;padding:7px 14px;font-size:.95rem;font-weight:800;color:#64748b}
+.chip.on{background:#dcfce7;border-color:#22c55e;color:#14532d}
+.chip.on::before{content:'✓ '}
+.pickall{background:#1f2937;color:#fff;border-radius:999px;padding:7px 14px;font-size:.9rem;font-weight:800}
+/* schriftliches Rechnen */
+.colwrap{text-align:center;margin-top:16px;overflow-x:auto}
+table.col{border-collapse:collapse;margin:8px auto;font-size:1.7rem;font-weight:800;background:#fff;background-image:linear-gradient(#dbeafe 1px,transparent 1px),linear-gradient(90deg,#dbeafe 1px,transparent 1px);background-size:100% 52px,52px 100%;border:2px solid #bfdbfe;border-radius:8px}
+table.col td{width:52px;height:52px;text-align:center;padding:0}
+table.col tr.crule td{border-top:4px solid #1f2937}
+table.col tr.carry td{height:26px;font-size:1rem;color:#e11d48;vertical-align:top}
+table.col td.ok{color:#15803d}table.col td.shown{color:#1d4ed8}
+.cc{width:46px;height:46px;border:3px solid #cbd5e1;border-radius:10px;background:#f8fafc;font-size:1.6rem;font-weight:800;display:block;margin:0 auto}
+.cc.act{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 4px #bfdbfe}
+.cc.right{border-color:#16a34a;background:#dcfce7}.cc.wrong{border-color:#e11d48;background:#ffe4e6}
+.fb table.col{font-size:1.25rem;background-size:100% 38px,38px 100%}.fb table.col td{width:38px;height:38px}
+.visual table.col{font-size:1.5rem}
+pre.div{display:inline-block;text-align:left;font:800 1.15rem/1.25 ui-monospace,Menlo,Consolas,monospace;background:#fff;border:2px solid #bfdbfe;border-radius:10px;padding:10px 16px;margin:4px auto}
+.fields.many{line-height:2.3}.fields.many .field{min-width:110px;height:50px}
+.prompt small{font-size:.95rem;color:#64748b;font-weight:700}
+svg.beet{width:100%;max-width:440px}svg.koerper{width:230px}svg.netz{max-width:100%}svg.bau{width:260px}svg.spiegel{width:100%;max-width:420px}svg.diag{width:100%;max-width:460px}svg.rad{width:200px}svg.beutel{width:260px}
+.row2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.row2 svg.rad{width:170px}
+.fb svg.koerper{width:150px}.fb svg.spiegel{max-width:300px}
+/* Szenen-Mechaniken */
+.pips{display:flex;gap:8px;justify-content:center;font-size:1.8rem;margin-bottom:8px}
+.pips span{filter:grayscale(.6);opacity:.55;transition:all .3s}.pips .cur{filter:none;opacity:1;transform:scale(1.25);animation:nudgeY 1s infinite}.pips .done{filter:none;opacity:1}
+.pips .fresh{animation:fresh .8s 2}
+@keyframes nudgeY{50%{transform:scale(1.25) translateY(-5px)}}
+.tbar{height:16px;background:#e2e8f0;border-radius:99px;margin:0 34px 12px 0;position:relative}
+.tbar i{display:block;height:100%;width:100%;border-radius:99px;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);transition:width .25s linear}
+.tbar span{position:absolute;right:-34px;top:-8px;font-size:1.5rem;animation:nudgeY 1s infinite}
+.ways{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.way{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 12px;border-radius:24px;color:#fff;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 6px 0 rgba(0,0,0,.22),0 12px 26px rgba(0,0,0,.25);border:3px solid rgba(255,255,255,.6);animation:pop .3s}
+.way .wayi{font-size:2.6rem}.way b{font-family:var(--head);font-size:1.3rem}.way small{font-size:.9rem}.way i{font-style:normal;letter-spacing:2px}
+@media(max-width:520px){.ways{grid-template-columns:1fr}}
+.bonus{display:inline-block;margin-top:10px;background:linear-gradient(135deg,#f59e0b,#facc15);color:#422006;border-radius:999px;padding:10px 22px;font-family:var(--head);font-size:1.15rem;box-shadow:0 4px 0 rgba(0,0,0,.2);animation:nudgeY2 1s infinite}
+@keyframes nudgeY2{50%{transform:translateY(-4px) rotate(-2deg)}}
+.bonus.spin{animation:none}.bonus.won{animation:none;background:#fff;box-shadow:none;border:3px solid #facc15}
+
+/* ===== Sichtbare Reaktion auf jeden Tastendruck ===== */
+button{overflow:hidden}
+button:not(:disabled):active,.caption:active{transform:scale(.94);filter:brightness(.9)}
+.tapfx{animation:tapfx .28s ease-out}
+@keyframes tapfx{0%{transform:scale(1)}35%{transform:scale(.9);filter:brightness(.85)}70%{transform:scale(1.05)}100%{transform:scale(1)}}
+.ripple{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 0 0 2px rgba(37,99,235,.35);pointer-events:none;animation:ripple .45s ease-out forwards}
+@keyframes ripple{to{transform:scale(14);opacity:0}}
+.keys button:active,.cc:active,.field:active{background:#93c5fd}
