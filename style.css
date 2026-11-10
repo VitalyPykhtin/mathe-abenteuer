@@ -251,3 +251,5 @@ button:not(:disabled):active,.caption:active{transform:scale(.94);filter:brightn
 .ripple{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 0 0 2px rgba(37,99,235,.35);pointer-events:none;animation:ripple .45s ease-out forwards}
 @keyframes ripple{to{transform:scale(14);opacity:0}}
 .keys button:active,.cc:active,.field:active{background:#93c5fd}
+.shoph{font-family:var(--head);font-size:1.05rem;margin:16px 4px 8px;color:#334155}.shoph.off{color:#94a3b8;font-size:.95rem}
+.shop .lockd{opacity:.55}.shop .lockd img{filter:grayscale(1) brightness(.55) blur(1.5px)}

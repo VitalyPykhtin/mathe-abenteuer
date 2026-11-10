@@ -192,7 +192,7 @@ function home() {
 
 /* ===================== GESCHICHTE ===================== */
 let ST = null;
-const GEMINFO = 'Für jedes geschaffte Kapitel bekommst du einen Zahlenkristall (in Teil 2 einen Sternsplitter) und 20 🪙. Er öffnet das nächste Kapitel und eine neue 3D-Welt in „Meine Welt“. Mit allen 7 Kristallen rettest du das Zahlenland – und mit allen 8 Sternsplittern leuchtet der Rechenstern wieder!';
+const GEMINFO = 'Für jedes geschaffte Kapitel bekommst du einen Zahlenkristall (in Teil 2 einen Sternsplitter) und 20 🪙. Er öffnet das nächste Kapitel, eine neue 3D-Welt und ein neues Sticker-Paket in „Meine Welt“. Mit allen 7 Kristallen rettest du das Zahlenland – und mit allen 8 Sternsplittern leuchtet der Rechenstern wieder!';
 const gemInfo = () => say(GEMINFO);
 const chOpen = i => i === 0 || partOf(CHAPTERS[i]) !== partOf(CHAPTERS[i - 1]) || !!S.done[CHAPTERS[i - 1].id];
 const gemImg = c => partOf(c) ? 'glowing_star' : 'gem_stone';
@@ -326,7 +326,7 @@ function chapterDone(ci) {
   const P = PARTS[partOf(c)], inPart = CHAPTERS.filter(x => partOf(x) === partOf(c)), last = inPart[inPart.length - 1] === c, nx = CHAPTERS[ci + 1];
   app.innerHTML = `<div class="stagehit"></div><div class="result"><h1>${last ? P.final : `${P.gem} ${inPart.filter(x => S.done[x.id]).length} von ${inPart.length}!`}</h1>
     <div class="bigstars">${starStr(chStars(c))}</div><p>Kapitel „${c.title}“ geschafft. +20 🪙</p>
-    <p>${last ? T(P.finalP) : `${P.icon} Dein ${P.gem} hat das nächste Kapitel geöffnet – und die Welt „${c.title}“ für „Meine Welt“. Dort kannst du sie mit Stickern einrichten!`}</p>
+    <p>${last ? T(P.finalP) : `${P.icon} Dein ${P.gem} hat das nächste Kapitel geöffnet – und die Welt „${c.title}“ samt neuem Sticker-Paket für „Meine Welt“!`}</p>
     <div class="btns">${nx ? `<button class="btn" style="background:${ENVCSS[nx.id][0]}" onclick="G.playChapter(${ci + 1})">${last ? 'Teil ' + (partOf(nx) + 1) + ' beginnen ▶' : `Kapitel ${ci + 2} starten ▶`}</button>` : ''}<button class="btn sec" onclick="S.my.env='${c.id}';save();G.myWorld()">🏰 Neue Welt ansehen</button><button class="btn sec" onclick="G.home()">Zur Startseite</button></div></div>`;
   window.scrollTo(0, 0);
 }
@@ -519,8 +519,15 @@ function examCheck() {
 
 /* ===================== MEINE WELT (Sticker) ===================== */
 let MY = null;
-const shopBtn = ([f, p]) => { const own = S.own[f] || p === 0, inW = S.my.items.some(q => q.k === f); return `<button class="${inW ? 'in' : own ? 'own' : ''}" onclick="G.sticker('${f}',${p})"><img src="${eimg(f)}" loading="lazy" alt=""><span>${inW ? '✓ in der Welt' : own ? '＋ hinstellen' : '🪙 ' + p}</span></button>`; };
-const myShop = () => { const el = $('#shop'); if (el) el.innerHTML = [[S.hero, 0], ...STICKERS].map(shopBtn).join(''); };
+const packOf = f => Object.keys(PACKS).find(k => PACKS[k].includes(f));
+/* frei ist ein Sticker, wenn sein Kapitel geschafft ist – oder wenn man ihn schon früher gekauft hat */
+const stickerOpen = f => { const k = packOf(f); return !k || f === S.hero || !!S.done[k] || !!S.own[f] || S.my.items.some(q => q.k === f); };
+const shopBtn = ([f, p]) => { const own = S.own[f] || p === 0, inW = S.my.items.some(q => q.k === f), open = stickerOpen(f); return `<button class="${inW ? 'in' : own ? 'own' : open ? '' : 'lockd'}" onclick="G.sticker('${f}',${p})"><img src="${eimg(f)}" loading="lazy" alt=""><span>${inW ? '✓ in der Welt' : own ? '＋ hinstellen' : open ? '🪙 ' + p : '🔒'}</span></button>`; };
+const myShop = () => {
+  const el = $('#shop'); if (!el) return; const all = [[S.hero, 0], ...STICKERS];
+  const sec = (title, list, cls = '') => list.length ? `<h3 class="shoph ${cls}">${title}</h3><div class="shop">${list.map(shopBtn).join('')}</div>` : '';
+  el.innerHTML = sec('🎒 Start-Paket', all.filter(x => !packOf(x[0]))) + CHAPTERS.map((c, i) => { const list = all.filter(x => packOf(x[0]) === c.id); return sec(S.done[c.id] ? `${PARTS[partOf(c)].icon} Paket „${c.title}“` : `🔒 Paket „${c.title}“ – schaffe Kapitel ${i + 1} in der Geschichte`, list, S.done[c.id] ? '' : 'off'); }).join('');
+};
 function myWorld() {
   MODE = 'my'; MY = { sel: null, drag: false }; S.own.fox = 1;
   const seen = {}; S.my.items = S.my.items.filter(it => !seen[it.k] && (seen[it.k] = 1)); // jeden Sticker nur einmal
@@ -528,8 +535,8 @@ function myWorld() {
   myStage();
   app.innerHTML = `<div class="stagehit my" id="myhit">${backBtn('G.home()')}${hud()}<div class="mytools" id="mytools"></div></div>
   <div class="panel"><div class="envs">${Object.keys(ENVCSS).map(e => { const o = envs.includes(e); return `<button class="${S.my.env === e ? 'sel' : ''} ${o ? '' : 'locked'}" style="--a:${ENVCSS[e][0]};--b:${ENVCSS[e][1]}" onclick="${o ? `G.myEnv('${e}')` : `G.say('Diese Welt bekommst du, wenn du das Kapitel in der Geschichte schaffst!')`}">${o ? '' : '🔒'}</button>`; }).join('')}</div>
-    <p class="hint">Jeden Sticker gibt es <b>einmal</b>: kaufen 🪙, dann hinstellen. Tippe ihn in deiner Welt an, um ihn zu <b>verschieben</b>, größer oder kleiner zu machen oder <b>wegzuräumen</b> 🗑.</p>
-    <div class="shop" id="shop"></div>
+    <p class="hint">Jedes geschaffte Kapitel der Geschichte schenkt dir eine neue Welt <b>und</b> ein neues Sticker-Paket. Jeden Sticker gibt es <b>einmal</b>: kaufen 🪙, dann hinstellen. Tippe ihn in deiner Welt an, um ihn zu <b>verschieben</b>, größer oder kleiner zu machen oder <b>wegzuräumen</b> 🗑.</p>
+    <div id="shop"></div>
     <button class="btn sec bordered" onclick="G.myClear()">🧹 Alle Sticker wegräumen</button></div>`;
   myShop();
   const hit = $('#myhit');
@@ -551,6 +558,7 @@ function myEnv(e) { S.my.env = e; save(); myWorld(); }
 function sticker(f, price) {
   const there = S.my.items.find(q => q.k === f);
   if (there) { MY.sel = there.id; W3.talk(there.id); myTools(); sfx.tap(); window.scrollTo({ top: 0, behavior: 'smooth' }); return say('Der Sticker steht schon in deiner Welt. Du kannst ihn oben verschieben oder wegräumen.'); }
+  if (!stickerOpen(f)) { sfx.bad(); const k = packOf(f), i = CHAPTERS.findIndex(c => c.id === k); return say(`Dieses Sticker-Paket bekommst du, wenn du Kapitel ${i + 1} „${CHAPTERS[i].title}“ in der Geschichte schaffst.`); }
   if (!S.own[f] && price > 0) {
     if (S.coins < price) { sfx.bad(); return say(`Dafür brauchst du ${price} Münzen. Löse Aufgaben, um Münzen zu verdienen!`); }
     S.coins -= price; S.own[f] = 1; sfx.win(); confetti(25); $('#coinct').textContent = S.coins;

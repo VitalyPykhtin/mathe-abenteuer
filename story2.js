@@ -260,3 +260,22 @@ CHAPTERS.push(
   ] },
 );
 STICKERS.push(['cookie', 8], ['doughnut', 8], ['red_apple', 6], ['honey_pot', 10], ['cactus', 10], ['game_die', 10], ['basket', 10], ['pig', 12], ['rooster', 12], ['cow', 12], ['bat', 12], ['bear', 15], ['camel', 18], ['crocodile', 18], ['lobster', 12], ['pirate_flag', 15], ['money_bag', 15], ['circus_tent', 25], ['telescope', 20], ['alien', 30]);
+/* Sticker-Pakete: Ein paar Sticker gibt es von Anfang an, die anderen schaltet jedes geschaffte Kapitel frei.
+   Sticker, die in keinem Paket stehen, gehören zum Start-Paket. */
+const PACKS = {
+  wald: ['evergreen_tree', 'hedgehog', 'chipmunk', 'owl', 'snail', 'lady_beetle', 'deer', 'rabbit'],
+  savanne: ['giraffe', 'zebra', 'elephant', 'lion', 'horse', 'hatching_chick'],
+  eis: ['penguin', 'seal', 'polar_bear', 'snowman', 'whale', 'soft_ice_cream'],
+  ozean: ['tropical_fish', 'dolphin', 'octopus', 'crab', 'turtle', 'shark', 'sailboat'],
+  dschungel: ['monkey', 'parrot', 'sloth', 'tiger', 'palm_tree', 'frog', 'flamingo'],
+  berge: ['llama', 'leopard', 'panda', 'tent', 'camping', 'cherry_blossom'],
+  insel: ['raccoon', 'kangaroo', 'koala', 'otter', 'rainbow', 'crown', 'wrapped_gift'],
+  markt: ['red_apple', 'basket', 'hamster', 'mouse', 'pig', 'rooster', 'cow', 'house'],
+  wiese: ['honeybee', 'honey_pot', 'duck', 'cat', 'dog', 'swan'],
+  piraten: ['pirate_flag', 'money_bag', 'crocodile', 'lobster'],
+  zucker: ['cookie', 'doughnut', 'birthday_cake', 'cupcake', 'lollipop', 'watermelon', 'bear', 'teddy_bear'],
+  schloss: ['castle', 'unicorn', 'peacock', 'ribbon'],
+  wueste: ['camel', 'cactus', 'bat', 'dragon'],
+  jahrmarkt: ['ferris_wheel', 'carousel_horse', 'circus_tent', 'game_die'],
+  sterne: ['rocket', 'ringed_planet', 'alien', 'telescope', 'glowing_star', 'crescent_moon', 'shooting_star'],
+};
