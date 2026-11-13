@@ -209,7 +209,7 @@ function home() {
   stage('home', 'home', [actor('polina', 36, 3, 44), actor('finn', 58, 3, 32, 'hop'), ...gems]);
   const ci = CHAPTERS.findIndex(c => !S.done[c.id]), ch = CHAPTERS[ci < 0 ? 0 : ci], allDone = ci < 0;
   const weak = selT().filter(t => S.tp[t] && S.tp[t].n >= 3).sort((a, b) => S.tp[a].ok / S.tp[a].n - S.tp[b].ok / S.tp[b].n)[0];
-  app.innerHTML = `<div class="stagehit"><h1 class="title" id="hometitle" style="pointer-events:auto;-webkit-touch-callout:none;touch-action:none">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
+  app.innerHTML = `<div class="stagehit"><h1 class="title" id="hometitle">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
   <div class="menu">
     <button class="mode big" style="--a:${ENVCSS[ch.id][0]};--b:${ENVCSS[ch.id][1]}" onclick="G.storyMenu()">
       <img src="${eimg('books')}" alt=""><span><b>📖 Geschichte</b><small>${allDone ? 'Alle Kristalle und Sternsplitter gefunden! Nochmal ansehen?' : `Kapitel ${ci + 1}: ${ch.title} · Szene ${Math.min((S.story[ch.id] || 0) + 1, ch.scenes.length)} von ${ch.scenes.length}`}</small></span><i>▶</i></button>
@@ -672,13 +672,9 @@ function manSet(what, v) {
   }
   sfx.tap(); manual();
 }
-/* Eltern-Bereich öffnen: Titel 2 Sekunden gedrückt halten (kleines Wackeln des Fingers ist erlaubt) – oder 5-mal schnell auf „Version …“ unten tippen */
-let holdT = null, holdXY = null, verTaps = [];
-document.addEventListener('pointerdown', e => { if (e.target.id !== 'hometitle') return; holdXY = [e.clientX, e.clientY]; clearTimeout(holdT); holdT = setTimeout(() => { holdXY = null; resetAll(); }, 2000); });
-document.addEventListener('pointermove', e => { if (holdXY && Math.hypot(e.clientX - holdXY[0], e.clientY - holdXY[1]) > 30) { clearTimeout(holdT); holdXY = null; } });
-['pointerup', 'pointercancel'].forEach(ev => document.addEventListener(ev, () => { clearTimeout(holdT); holdXY = null; }));
-document.addEventListener('contextmenu', e => { if (e.target.id === 'hometitle') e.preventDefault(); });
-function verTap() { const t = Date.now(); verTaps = verTaps.filter(x => t - x < 3000); verTaps.push(t); if (verTaps.length >= 5) { verTaps = []; resetAll(); } }
+/* Eltern-Bereich öffnen: 10-mal schnell auf „Version …“ unten auf der Startseite tippen */
+let verTaps = [];
+function verTap() { const t = Date.now(); verTaps = verTaps.filter(x => t - x < 6000); verTaps.push(t); if (verTaps.length >= 10) { verTaps = []; resetAll(); } }
 let OFFLINE = false;
 /* Jeder Knopf federt sichtbar, wenn man ihn drückt (auch bei ganz kurzem Tippen) */
 document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('button,.caption'); if (!b || b.disabled) return; b.classList.remove('tapfx'); void b.offsetWidth; b.classList.add('tapfx'); const r = b.getBoundingClientRect(), d = document.createElement('span'); d.className = 'ripple'; d.style.left = e.clientX - r.left + 'px'; d.style.top = e.clientY - r.top + 'px'; if (getComputedStyle(b).position === 'static') b.style.position = 'relative'; b.appendChild(d); setTimeout(() => d.remove(), 450); }, true);
