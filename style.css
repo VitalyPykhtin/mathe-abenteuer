@@ -266,3 +266,13 @@ button:not(:disabled):active,.caption:active{transform:scale(.94);filter:brightn
 /* Eltern-Bereich */
 #parent textarea{width:100%;font:600 .8rem/1.3 ui-monospace,Menlo,monospace;border:3px solid #cbd5e1;border-radius:12px;padding:8px;resize:none;word-break:break-all;-webkit-user-select:text;user-select:text;font-size:16px}
 #parent .btns .btn{margin-top:8px;font-size:1.05rem;padding:11px 18px}
+.pill.ver{background:rgba(255,255,255,.55);font-size:.8rem;box-shadow:none}
+.thinkbox.wide{max-width:860px;max-height:94vh;overflow:auto}.think{align-items:start}
+.addr{font-size:.9rem}
+.manch{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.manch button,.manw button{background:#f1f5f9;border:3px solid #e2e8f0;border-radius:14px;padding:8px 10px;font-size:.9rem;font-weight:800;color:#64748b;text-align:left;display:flex;gap:8px;align-items:center}
+.manch button b{background:#cbd5e1;color:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;flex:none}
+.manch .on,.manw .on{background:#dcfce7;border-color:#22c55e;color:#14532d}.manch .on b{background:#16a34a}
+.manw{display:grid;grid-template-columns:180px repeat(3,1fr);gap:6px;align-items:center;margin:6px 0;font-size:.9rem}
+.manw button{flex-direction:column;align-items:center;gap:0;text-align:center;padding:6px 4px;font-size:.82rem}.manw i{font-style:normal;color:#eab308;letter-spacing:2px}
+@media(max-width:600px){.manw{grid-template-columns:1fr 1fr 1fr}.manw span{grid-column:1/-1;margin-top:6px}}

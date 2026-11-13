@@ -5,7 +5,11 @@ const S = (() => {
   const d = { name: '', hero: '', stars: {}, sound: true, voice: true, coins: 0, solved: 0, story: {}, sf: {}, done: {}, blitz: 0, exam: 0, tp: {}, sel: null, own: {}, my: { env: 'home', items: [] }, last: '', days: 0 };
   try { return Object.assign(d, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { return d; }
 })();
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* egal */ } };
+/* Der Spielstand liegt im localStorage und zur Sicherheit als Kopie im Cache-Speicher (wird beim Start zurückgeholt, falls der localStorage leer ist) */
+const MIRROR = 'mathe-abenteuer-save';
+const mirror = json => { try { if (window.caches) caches.open(MIRROR).then(c => json == null ? c.delete('save') : c.put('save', new Response(json, { headers: { 'content-type': 'application/json' } }))).catch(() => {}); } catch (e) { /* egal */ } };
+const save = () => { try { const j = JSON.stringify(S); localStorage.setItem(KEY, j); if (S.hero) mirror(j); } catch (e) { /* egal */ } };
+const HAD_SAVE = (() => { try { return !!localStorage.getItem(KEY); } catch (e) { return true; } })();
 const $ = s => document.querySelector(s);
 const app = $('#app');
 const eimg = f => `img/e/${f}.png`;
@@ -216,7 +220,7 @@ function home() {
     <button class="mode" style="--a:#0369a1;--b:#38bdf8" onclick="G.myWorld()"><img src="${eimg('castle')}" alt=""><span><b>Meine Welt</b><small>Sticker kaufen und 3D-Welt bauen</small></span></button>
     <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>${cardCount() ? cardCount() + ' von ' + CARDS + ' Karten' : 'Karten gewinnst du im Training'}</small></span></button>
   </div>
-  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span></div>`;
+  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span><span class="pill ver">Version ${VERSION}</span></div>`;
   window.scrollTo(0, 0);
 }
 
@@ -598,7 +602,7 @@ function sticker(f, price) {
 }
 /* Versteckt für Eltern: Titel auf der Startseite 3 Sekunden gedrückt halten (oder #reset an die Adresse hängen), dann RESET eintippen */
 /* Eltern-Bereich: Fortschritt sichern, wiederherstellen oder löschen */
-const VERSION = '13';
+const VERSION = '14', MAIN_HOST = 'mathe-abenteuer.ermakov.dev';
 const packSave = () => 'MA1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
 function unpackSave(code) {
   const m = String(code).replace(/\s+/g, '').match(/MA1:([A-Za-z0-9+/=]+)/); if (!m) return null;
@@ -607,6 +611,8 @@ function unpackSave(code) {
 function resetAll() {
   if ($('#parent')) return; const d = document.createElement('div'); d.className = 'think'; d.id = 'parent';
   d.innerHTML = `<div class="thinkbox"><div class="thinktop"><img src="${eimg('key')}" alt=""><div><h2>Eltern-Bereich</h2><p>Version ${VERSION} · 💎 ${gemCount()}/${CHAPTERS.length} · 🃏 ${cardCount()}/${CARDS} · 🪙 ${S.coins}</p></div></div>
+    <p class="hint addr">Adresse dieser Kopie: <b>${location.host}</b>${location.hostname === MAIN_HOST ? '' : `<br>⚠️ Das ist nicht die Hauptadresse <b>${MAIN_HOST}</b>. Jede Adresse hat ihren eigenen Spielstand und ihre eigene Version!`}</p>
+    <div class="btns"><button class="btn" style="background:#b45309" onclick="G.manual()">✏️ Fortschritt von Hand eintragen</button></div>
     <p class="hint"><b>Fortschritt sichern:</b> Der Code unten enthält den ganzen Spielstand. Kopiere ihn und bewahre ihn auf (z.&nbsp;B. in den Notizen oder per Nachricht an dich selbst).</p>
     <textarea id="pcode" readonly rows="4">${packSave()}</textarea>
     <div class="btns"><button class="btn" style="background:#0f766e" onclick="G.parent('copy')">📋 Code kopieren</button>${navigator.share ? '<button class="btn" style="background:#0369a1" onclick="G.parent(\'share\')">📤 Teilen …</button>' : ''}</div>
@@ -626,7 +632,45 @@ function parent(a) {
     if (!confirm(`Spielstand von „${o.name || '?'}“ wiederherstellen (${Object.keys(o.done).length} Kapitel, ${o.coins || 0} Münzen)? Der jetzige Spielstand auf diesem Gerät wird ersetzt.`)) return;
     try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { return toast('❌ Speichern nicht möglich.'); } location.hash = ''; location.reload(); return;
   }
-  if (a === 'wipe') { const x = prompt('Um ALLES zu löschen (Münzen, Kristalle, Tierkarten, Welt), hier RESET eintippen:'); if (!x || x.trim().toUpperCase() !== 'RESET') return; try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } location.hash = ''; location.reload(); }
+  if (a === 'wipe') { const x = prompt('Um ALLES zu löschen (Münzen, Kristalle, Tierkarten, Welt), hier RESET eintippen:'); if (!x || x.trim().toUpperCase() !== 'RESET') return; try { localStorage.removeItem(KEY); } catch (e) { /* egal */ } mirror(null); location.hash = ''; setTimeout(() => location.reload(), 300); }
+}
+/* Fortschritt von Hand eintragen (z.B. nach einem verlorenen Spielstand): Kapitel und Tierkarten anklicken, Münzen werden passend gutgeschrieben */
+let MAN = null;
+const chTasks = c => c.scenes.filter(sc => sc.g || sc.pick).length;
+function manualCoins() {
+  let n = 0;
+  CHAPTERS.forEach((c, i) => { if (i < MAN.ch && !S.done[c.id]) n += chTasks(c) * 3 + 20; });
+  Object.keys(MAN.stars).forEach(k => { const now = MAN.stars[k], was = S.stars[k] || 0; if (now > was) n += (was ? 0 : 5) + (now - was) * 5; });
+  return n;
+}
+function manual() {
+  const p = $('#parent'); if (p) p.remove();
+  if (!MAN) { let ch = 0; while (ch < CHAPTERS.length && S.done[CHAPTERS[ch].id]) ch++; MAN = { ch, stars: {} }; WORLDS.forEach((w, wi) => w.animals.forEach((a, li) => { MAN.stars[wi + '-' + li] = starsOf(wi, li); })); }
+  let d = $('#manual'); if (!d) { d = document.createElement('div'); d.className = 'think'; d.id = 'manual'; document.body.appendChild(d); }
+  const y = d.scrollTop, plus = manualCoins();
+  d.innerHTML = `<div class="thinkbox wide"><div class="thinktop"><img src="${eimg('memo')}" alt=""><div><h2>Fortschritt eintragen</h2><p>Tippe an, was schon geschafft war. Münzen, Kristalle und Sticker-Pakete kommen automatisch dazu.</p></div></div>
+    <h3 class="shoph">📖 Geschichte – bis zu welchem Kapitel war alles geschafft?</h3>
+    <div class="manch">${CHAPTERS.map((c, i) => `<button class="${i < MAN.ch ? 'on' : ''}" onclick="G.manSet('ch',${i})"><b>${i + 1}</b>${c.title}</button>`).join('')}</div>
+    <h3 class="shoph">🃏 Training – Tierkarten (antippen: 1, 2, 3 Sterne, wieder leer)</h3>
+    ${WORLDS.map((w, wi) => `<div class="manw"><span>${w.icon} ${w.name}</span>${w.animals.map((a, li) => { const st = MAN.stars[wi + '-' + li]; return `<button class="${st ? 'on' : ''}" onclick="G.manSet('st','${wi}-${li}')">${ANIMALS[a][0]}<i>${st ? '★'.repeat(st) : '–'}</i></button>`; }).join('')}</div>`).join('')}
+    <p class="hint">💎 ${MAN.ch} von ${CHAPTERS.length} Kapiteln · 🃏 ${Object.values(MAN.stars).filter(x => x > 0).length} von ${CARDS} Karten · Gutschrift: <b>+${plus} 🪙</b></p>
+    <div class="btns"><button class="btn" style="background:#0f766e" onclick="G.manSet('apply')">✅ Übernehmen</button><button class="btn sec bordered" onclick="G.manSet('cancel')">Abbrechen</button></div></div>`;
+  d.scrollTop = y;
+}
+function manSet(what, v) {
+  if (what === 'ch') MAN.ch = MAN.ch === v + 1 ? v : v + 1;
+  else if (what === 'st') MAN.stars[v] = (MAN.stars[v] + 1) % 4;
+  else if (what === 'cancel') { MAN = null; $('#manual').remove(); return; }
+  else if (what === 'apply') {
+    const plus = manualCoins();
+    CHAPTERS.forEach((c, i) => {
+      if (i < MAN.ch) { if (!S.done[c.id]) { S.solved += chTasks(c); c.scenes.forEach((sc, si) => { if ((sc.g || sc.pick) && S.sf[c.id + '-' + si] == null) S.sf[c.id + '-' + si] = 1; }); } S.done[c.id] = 1; S.story[c.id] = c.scenes.length; }
+      else if (S.done[c.id]) { delete S.done[c.id]; delete S.story[c.id]; }
+    });
+    Object.keys(MAN.stars).forEach(k => { if (MAN.stars[k]) S.stars[k] = MAN.stars[k]; else delete S.stars[k]; });
+    S.coins += plus; save(); MAN = null; $('#manual').remove(); confetti(80); sfx.win(); home(); toast(`✅ Fortschritt eingetragen. +${plus} 🪙`); return;
+  }
+  sfx.tap(); manual();
 }
 let holdT = null;
 document.addEventListener('pointerdown', e => { if (e.target.id === 'hometitle') holdT = setTimeout(resetAll, 3000); });
@@ -641,7 +685,7 @@ function say(t) { toast(t); speak(t); }
 function check() { if (MODE === 'story') sCheck(); else if (MODE === 'quiz') quizCheck(); else if (MODE === 'blitz') blitzCheck(); else if (MODE === 'exam') examCheck(); }
 function toggle(k, inScene) { S[k] = !S[k]; save(); if (k === 'voice' && !S.voice && window.speechSynthesis) speechSynthesis.cancel(); if (inScene) { event.target.textContent = S.voice ? '🗣️' : '🤐'; } else home(); }
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || $('#parent') || $('#think')) return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || $('#parent') || $('#think') || $('#manual')) return;
   if (MODE === 'story' && ST && ST.phase === 'talk' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); return sNext(); }
   if (!CUR || !['story', 'quiz', 'blitz', 'exam'].includes(MODE)) return;
   if (e.key === 'Enter') { const b = $('#check'); if (b && !b.disabled) { e.preventDefault(); b.click(); } return; }
@@ -650,11 +694,20 @@ document.addEventListener('keydown', e => {
   else if (q.type === 'choice' && /^[1-4]$/.test(e.key) && +e.key <= q.options.length) choose(+e.key - 1);
   else if (q.type === 'line') { if (e.key === 'ArrowLeft') nudge(-1); if (e.key === 'ArrowRight') nudge(1); }
 });
-const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, parent, nudge, check, quit, toggle };
+const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, parent, manual, manSet, nudge, check, quit, toggle };
 window.G = G;
 
 /* Offline: Service Worker speichert alle Dateien auf dem Gerät (braucht HTTPS oder localhost) */
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => { OFFLINE = true; const el = $('#offst'); if (el) el.style.display = ''; }).catch(() => {});
+if ('serviceWorker' in navigator) {
+  const had = !!navigator.serviceWorker.controller; let reloaded = false;
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(r => { try { r.update(); } catch (e) { /* egal */ } return navigator.serviceWorker.ready; }).then(() => { OFFLINE = true; const el = $('#offst'); if (el) el.style.display = ''; }).catch(() => {});
+  /* neue Version ist da → Startseite sofort neu laden (nicht mitten in einer Aufgabe) */
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !reloaded && (MODE === 'home' || MODE === 'hero')) { reloaded = true; location.reload(); } });
+}
+/* Browser bitten, den Spielstand nicht von selbst zu löschen */
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* egal */ }
+/* localStorage leer, aber es gibt noch eine Kopie → Spielstand zurückholen */
+if (!HAD_SAVE && window.caches) caches.open(MIRROR).then(c => c.match('save')).then(r => r && r.text()).then(j => { if (!j) return; const o = JSON.parse(j); if (!o || !o.hero || S.hero) return; localStorage.setItem(KEY, j); location.reload(); }).catch(() => {});
 /* Start */
 if (!W3.init($('#gl'))) document.body.classList.add('nogl');
 (() => { // Tagesbonus
