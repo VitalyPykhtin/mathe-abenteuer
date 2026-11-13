@@ -672,9 +672,9 @@ function manSet(what, v) {
   }
   sfx.tap(); manual();
 }
-/* Eltern-Bereich öffnen: 10-mal schnell auf „Version …“ unten auf der Startseite tippen */
-let verTaps = [];
-function verTap() { const t = Date.now(); verTaps = verTaps.filter(x => t - x < 6000); verTaps.push(t); if (verTaps.length >= 10) { verTaps = []; resetAll(); } }
+/* Eltern-Bereich öffnen: 10-mal hintereinander auf „Version …“ unten auf der Startseite tippen (Pause über 1,5 s zählt neu) */
+let verN = 0, verT = 0;
+function verTap() { const t = Date.now(); verN = t - verT < 1500 ? verN + 1 : 1; verT = t; if (verN >= 10) { verN = 0; resetAll(); } }
 let OFFLINE = false;
 /* Jeder Knopf federt sichtbar, wenn man ihn drückt (auch bei ganz kurzem Tippen) */
 document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('button,.caption'); if (!b || b.disabled) return; b.classList.remove('tapfx'); void b.offsetWidth; b.classList.add('tapfx'); const r = b.getBoundingClientRect(), d = document.createElement('span'); d.className = 'ripple'; d.style.left = e.clientX - r.left + 'px'; d.style.top = e.clientY - r.top + 'px'; if (getComputedStyle(b).position === 'static') b.style.position = 'relative'; b.appendChild(d); setTimeout(() => d.remove(), 450); }, true);
