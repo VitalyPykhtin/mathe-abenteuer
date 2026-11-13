@@ -77,7 +77,7 @@ function stage(size, envKey, list, instant) {
   W3.setEnv(name, /2$/.test(envKey) ? 1 : 0); W3.setActors(list || [], instant); W3.talk(null);
   requestAnimationFrame(() => W3.resize());
 }
-const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span style="pointer-events:auto;cursor:pointer" onclick="event.stopPropagation();G.gemInfo()">💎 ${gemCount()}/${CHAPTERS.length}</span>${S.feather ? `<span>🪶 ${S.feather}</span>` : ''}${S.days > 1 ? `<span>🔥 ${S.days} Tage</span>` : ''}</div>`;
+const hud = () => `<div class="hud"><span>🪙 <b id="coinct">${S.coins}</b></span><span style="pointer-events:auto;cursor:pointer" onclick="event.stopPropagation();G.gemInfo()">💎 ${gemCount()}/${CHAPTERS.length}</span>${S.feather ? `<span>🪶 ${S.feather}</span>` : ''}</div>`;
 const backBtn = (fn, label = '← Zurück') => `<button class="back" onclick="event.stopPropagation();${fn}">${label}</button>`;
 
 /* ===================== Aufgaben-Baustein ===================== */
@@ -209,7 +209,7 @@ function home() {
   stage('home', 'home', [actor('polina', 36, 3, 44), actor('finn', 58, 3, 32, 'hop'), ...gems]);
   const ci = CHAPTERS.findIndex(c => !S.done[c.id]), ch = CHAPTERS[ci < 0 ? 0 : ci], allDone = ci < 0;
   const weak = selT().filter(t => S.tp[t] && S.tp[t].n >= 3).sort((a, b) => S.tp[a].ok / S.tp[a].n - S.tp[b].ok / S.tp[b].n)[0];
-  app.innerHTML = `<div class="stagehit"><h1 class="title" id="hometitle" style="pointer-events:auto;-webkit-touch-callout:none">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
+  app.innerHTML = `<div class="stagehit"><h1 class="title" id="hometitle" style="pointer-events:auto;-webkit-touch-callout:none;touch-action:none">${S.name}s Mathe-Abenteuer</h1>${hud()}</div>
   <div class="menu">
     <button class="mode big" style="--a:${ENVCSS[ch.id][0]};--b:${ENVCSS[ch.id][1]}" onclick="G.storyMenu()">
       <img src="${eimg('books')}" alt=""><span><b>📖 Geschichte</b><small>${allDone ? 'Alle Kristalle und Sternsplitter gefunden! Nochmal ansehen?' : `Kapitel ${ci + 1}: ${ch.title} · Szene ${Math.min((S.story[ch.id] || 0) + 1, ch.scenes.length)} von ${ch.scenes.length}`}</small></span><i>▶</i></button>
@@ -220,7 +220,7 @@ function home() {
     <button class="mode" style="--a:#0369a1;--b:#38bdf8" onclick="G.myWorld()"><img src="${eimg('castle')}" alt=""><span><b>Meine Welt</b><small>Sticker kaufen und 3D-Welt bauen</small></span></button>
     <button class="mode" style="--a:#a16207;--b:#fbbf24" onclick="G.album()"><img src="${eimg('trophy')}" alt=""><span><b>Tieralbum</b><small>${cardCount() ? cardCount() + ' von ' + CARDS + ' Karten' : 'Karten gewinnst du im Training'}</small></span></button>
   </div>
-  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span><span class="pill ver">Version ${VERSION}</span></div>`;
+  <div class="foot"><button class="pill" onclick="G.toggle('sound')">${S.sound ? '🔊 Töne an' : '🔇 Töne aus'}</button><button class="pill" onclick="G.toggle('voice')">${S.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus'}</button><button class="pill" onclick="G.chooseHero()">🧑‍🎤 Figur ändern</button><span class="pill off" id="offst" style="display:${OFFLINE ? '' : 'none'}">✈️ Offline bereit</span><button class="pill ver" onclick="G.verTap()">Version ${VERSION}</button></div>`;
   window.scrollTo(0, 0);
 }
 
@@ -602,7 +602,7 @@ function sticker(f, price) {
 }
 /* Versteckt für Eltern: Titel auf der Startseite 3 Sekunden gedrückt halten (oder #reset an die Adresse hängen), dann RESET eintippen */
 /* Eltern-Bereich: Fortschritt sichern, wiederherstellen oder löschen */
-const VERSION = '14', MAIN_HOST = 'mathe-abenteuer.ermakov.dev';
+const VERSION = '15', MAIN_HOST = 'mathe-abenteuer.ermakov.dev';
 const packSave = () => 'MA1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S))));
 function unpackSave(code) {
   const m = String(code).replace(/\s+/g, '').match(/MA1:([A-Za-z0-9+/=]+)/); if (!m) return null;
@@ -672,9 +672,13 @@ function manSet(what, v) {
   }
   sfx.tap(); manual();
 }
-let holdT = null;
-document.addEventListener('pointerdown', e => { if (e.target.id === 'hometitle') holdT = setTimeout(resetAll, 3000); });
-['pointerup', 'pointercancel', 'pointermove'].forEach(ev => document.addEventListener(ev, () => { clearTimeout(holdT); }));
+/* Eltern-Bereich öffnen: Titel 2 Sekunden gedrückt halten (kleines Wackeln des Fingers ist erlaubt) – oder 5-mal schnell auf „Version …“ unten tippen */
+let holdT = null, holdXY = null, verTaps = [];
+document.addEventListener('pointerdown', e => { if (e.target.id !== 'hometitle') return; holdXY = [e.clientX, e.clientY]; clearTimeout(holdT); holdT = setTimeout(() => { holdXY = null; resetAll(); }, 2000); });
+document.addEventListener('pointermove', e => { if (holdXY && Math.hypot(e.clientX - holdXY[0], e.clientY - holdXY[1]) > 30) { clearTimeout(holdT); holdXY = null; } });
+['pointerup', 'pointercancel'].forEach(ev => document.addEventListener(ev, () => { clearTimeout(holdT); holdXY = null; }));
+document.addEventListener('contextmenu', e => { if (e.target.id === 'hometitle') e.preventDefault(); });
+function verTap() { const t = Date.now(); verTaps = verTaps.filter(x => t - x < 3000); verTaps.push(t); if (verTaps.length >= 5) { verTaps = []; resetAll(); } }
 let OFFLINE = false;
 /* Jeder Knopf federt sichtbar, wenn man ihn drückt (auch bei ganz kurzem Tippen) */
 document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('button,.caption'); if (!b || b.disabled) return; b.classList.remove('tapfx'); void b.offsetWidth; b.classList.add('tapfx'); const r = b.getBoundingClientRect(), d = document.createElement('span'); d.className = 'ripple'; d.style.left = e.clientX - r.left + 'px'; d.style.top = e.clientY - r.top + 'px'; if (getComputedStyle(b).position === 'static') b.style.position = 'relative'; b.appendChild(d); setTimeout(() => d.remove(), 450); }, true);
@@ -694,7 +698,7 @@ document.addEventListener('keydown', e => {
   else if (q.type === 'choice' && /^[1-4]$/.test(e.key) && +e.key <= q.options.length) choose(+e.key - 1);
   else if (q.type === 'line') { if (e.key === 'ArrowLeft') nudge(-1); if (e.key === 'ArrowRight') nudge(1); }
 });
-const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, parent, manual, manSet, nudge, check, quit, toggle };
+const G = { gemInfo, albumPlay, home, chooseHero, pickHero, heroDone, storyMenu, playChapter, playScene, sNext, chapterDone, trainMenu, world, train, album, weakMenu, weak, blitzIntro, blitz, examIntro, exam, myWorld, myEnv, myEdit, myClear, resetAll, sticker, say, choose, focus, key, colFocus, pickT, pickPart, sWay, sBonus, parent, manual, manSet, verTap, nudge, check, quit, toggle };
 window.G = G;
 
 /* Offline: Service Worker speichert alle Dateien auf dem Gerät (braucht HTTPS oder localhost) */
@@ -710,9 +714,5 @@ try { if (navigator.storage && navigator.storage.persist) navigator.storage.pers
 if (!HAD_SAVE && window.caches) caches.open(MIRROR).then(c => c.match('save')).then(r => r && r.text()).then(j => { if (!j) return; const o = JSON.parse(j); if (!o || !o.hero || S.hero) return; localStorage.setItem(KEY, j); location.reload(); }).catch(() => {});
 /* Start */
 if (!W3.init($('#gl'))) document.body.classList.add('nogl');
-(() => { // Tagesbonus
-  const d = new Date(), today = d.toDateString(), y = new Date(d - 864e5).toDateString();
-  if (S.last !== today) { S.days = S.last === y ? S.days + 1 : 1; S.last = today; const bonus = Math.min(S.days, 5) * 3; if (S.hero) { S.coins += bonus; setTimeout(() => toast(`🎁 Tagesbonus: +${bonus} 🪙${S.days > 1 ? ` · ${S.days} Tage in Folge!` : ''}`), 800); } save(); }
-})();
 home();
 if (location.hash === '#reset') setTimeout(resetAll, 500);
