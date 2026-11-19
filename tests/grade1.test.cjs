@@ -6,19 +6,20 @@ const grade1 = require('../grades/klasse1.js');
 
 test('the original Klasse 4 save key is preserved', () => {
   assert.equal(catalogue[4].progressKey, 'mathe-abenteuer-v2');
-  assert.equal(catalogue[4].entryPoint, 'index.html');
+  assert.equal(catalogue[4].entryPoint, 'klasse4.html');
+  assert.equal(catalogue[1].entryPoint, 'klasse1.html');
   assert.equal(new Set(Object.values(catalogue).map(grade => grade.progressKey)).size, 4);
 });
 
 test('all four grades are declared and only Klasse 4 is marked existing', () => {
   assert.deepEqual(Object.keys(catalogue), ['1', '2', '3', '4']);
-  assert.equal(catalogue[1].status, 'prototype');
+  assert.equal(catalogue[1].status, 'playable');
   assert.equal(catalogue[2].status, 'planned');
   assert.equal(catalogue[3].status, 'planned');
   assert.equal(catalogue[4].status, 'existing');
 });
 
-test('the first Klasse 1 question bank has three levels per world', () => {
+test('the playable Klasse 1 question bank has three levels per world', () => {
   assert.ok(grade1.worlds.length >= 4);
   assert.equal(new Set(grade1.worlds.map(world => world.id)).size, grade1.worlds.length);
   for (const world of grade1.worlds) {
