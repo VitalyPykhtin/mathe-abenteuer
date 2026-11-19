@@ -7,11 +7,11 @@ This folder powers the personal multi-grade fork. Start at the [fork guide](../F
 | Grade | Status |
 | --- | --- |
 | 1 | **Playable first version** — 4 worlds × 3 levels (12 sets), 4 mini-story chapters, 3D stage reusing original assets, stars, coins, spoken German hints, separate progress and backup code |
-| 2 | In preparation — topic outline only, not shown as a clickable grade |
-| 3 | In preparation — topic outline only, not shown as a clickable grade |
+| 2 | **Playable first version:** 6 worlds, 3 levels per world, 6 stories, independent grade 2 save |
+| 3 | **Playable first version:** 6 worlds, 3 levels per world, 6 stories, independent grade 3 save |
 | 4 | Original complete game preserved on \`klasse4.html\`, untouched engine and storage key |
 
-The current Klasse 1 version is **not a complete grade-year curriculum**. For example, money, time and lengths still need dedicated worlds, more visual exercise styles and parent/teacher review.
+The current editions for Klassen 1–3 are **not complete grade-year curricula**. For example, money, time and lengths still need dedicated worlds, more visual exercise styles and parent/teacher review.
 
 ## Architecture
 
@@ -30,8 +30,8 @@ The original 4th-grade progress remains \`mathe-abenteuer-v2\` and its mirror ca
 
 1. Validate this playable Klasse 1 first version on iPad, including offline and German speech.
 2. Extend Klasse 1 to the full expected mathematics curriculum and richer visual questions.
-3. Build Klasse 2 exercises, storyline and separate saves.
-4. Build Klasse 3 exercises, storyline and separate saves.
+3. Extend the playable Klasse 2 edition to full curriculum coverage.
+4. Extend the playable Klasse 3 edition to full curriculum coverage.
 5. Review material against the Berlin/Brandenburg Rahmenlehrplan, test accessibility and iPad reliability.
 
 Source credit: [dreef3/mathe-abenteuer](https://github.com/dreef3/mathe-abenteuer). Personal use only; upstream has no explicit top-level LICENSE file.
