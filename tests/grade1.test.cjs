@@ -11,11 +11,13 @@ test('the original Klasse 4 save key is preserved', () => {
   assert.equal(new Set(Object.values(catalogue).map(grade => grade.progressKey)).size, 4);
 });
 
-test('all four grades are declared and only Klasse 4 is marked existing', () => {
+test('all four grades are declared and all grades marked playable after integration', () => {
   assert.deepEqual(Object.keys(catalogue), ['1', '2', '3', '4']);
   assert.equal(catalogue[1].status, 'playable');
-  assert.equal(catalogue[2].status, 'planned');
-  assert.equal(catalogue[3].status, 'planned');
+  assert.equal(catalogue[2].status, 'playable');
+  assert.equal(catalogue[2].entryPoint, 'klasse2.html');
+  assert.equal(catalogue[3].status, 'playable');
+  assert.equal(catalogue[3].entryPoint, 'klasse3.html');
   assert.equal(catalogue[4].status, 'existing');
 });
 

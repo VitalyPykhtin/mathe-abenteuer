@@ -14,7 +14,8 @@
       ]
     }),
     2: Object.freeze({
-      grade: 2, title: '2. Klasse', status: 'planned',
+      grade: 2, title: '2. Klasse', status: 'playable',
+      entryPoint: 'klasse2.html',
       progressKey: 'mathe-abenteuer-grade-2-v1',
       topics: [
         'Zahlen bis 100', 'Plus und Minus bis 100',
@@ -22,7 +23,8 @@
       ]
     }),
     3: Object.freeze({
-      grade: 3, title: '3. Klasse', status: 'planned',
+      grade: 3, title: '3. Klasse', status: 'playable',
+      entryPoint: 'klasse3.html',
       progressKey: 'mathe-abenteuer-grade-3-v1',
       topics: [
         'Zahlen bis 1 000', 'Plus und Minus bis 1 000',

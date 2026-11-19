@@ -1,12 +1,12 @@
 'use strict';
 /* Offline cache for the personal multi-grade fork. Keep all local progress mirror caches intact. */
 importScripts('tasks.js', 'tasks2.js', 'story.js', 'story2.js');
-const V = 'v16', CACHE = 'mathe-abenteuer-' + V;
+const V = 'v17', CACHE = 'mathe-abenteuer-' + V;
 const CORE = [
-  './', 'index.html', 'klasse1.html', 'klasse4.html',
+  './', 'index.html', 'klasse1.html', 'klasse2.html', 'klasse3.html', 'klasse4.html',
   'style.css', 'game.js', 'tasks.js', 'tasks2.js', 'story.js', 'story2.js',
   'world3d.js', 'three.min.js', 'manifest.json',
-  'grades/catalog.js', 'grades/launcher.css', 'grades/klasse1.js',
+  'grades/catalog.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
   'grades/klasse1-app.js', 'grades/klasse1.css',
   'fonts/fredoka.woff2', 'fonts/nunito.woff2',
   'img/e/gem_stone.png', 'img/e/boy.png', 'img/e/girl.png',
@@ -25,7 +25,8 @@ self.addEventListener('install', event => event.waitUntil(
 ));
 self.addEventListener('activate', event => event.waitUntil(
   caches.keys().then(keys => Promise.all(keys
-    .filter(k => k !== CACHE && k !== 'mathe-abenteuer-save' && k !== 'mathe-abenteuer-grade-1-save')
+    .filter(k => k !== CACHE && k !== 'mathe-abenteuer-save' && k !== 'mathe-abenteuer-grade-1-save' &&
+      k !== 'mathe-abenteuer-grade-2-save' && k !== 'mathe-abenteuer-grade-3-save')
     .map(k => caches.delete(k)))).then(() => self.clients.claim())
 ));
 self.addEventListener('fetch', event => {
