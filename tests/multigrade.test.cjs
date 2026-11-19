@@ -6,12 +6,12 @@ const assert = require('node:assert/strict');
 const root = path.join(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 
-test('grade selector links to the two currently playable grades', () => {
+test('grade selector links to all four playable grades', () => {
   const index = read('index.html');
   assert.match(index, /href="klasse1\.html"/);
   assert.match(index, /href="klasse4\.html"/);
-  assert.doesNotMatch(index, /href="klasse2\.html"/);
-  assert.doesNotMatch(index, /href="klasse3\.html"/);
+  assert.match(index, /href="klasse2\.html"/);
+  assert.match(index, /href="klasse3\.html"/);
 });
 
 test('Klasse 4 page preserves original engine and save format', () => {
@@ -34,13 +34,15 @@ test('new Grade 1 page reuses original procedural Three.js world', () => {
 
 test('service worker pre-caches all grade pages and preserves both saves', () => {
   const worker = read('sw.js');
-  for (const file of ['index.html', 'klasse1.html', 'klasse4.html',
-    'grades/catalog.js', 'grades/launcher.css', 'grades/klasse1.js',
+  for (const file of ['index.html', 'klasse1.html', 'klasse2.html', 'klasse3.html', 'klasse4.html',
+    'grades/catalog.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
     'grades/klasse1-app.js', 'grades/klasse1.css']) {
     assert.ok(worker.includes("'" + file + "'"), file);
   }
   assert.match(worker, /k !== 'mathe-abenteuer-save'/);
   assert.match(worker, /k !== 'mathe-abenteuer-grade-1-save'/);
+  assert.match(worker, /k !== 'mathe-abenteuer-grade-2-save'/);
+  assert.match(worker, /k !== 'mathe-abenteuer-grade-3-save'/);
 });
 
 test('Grade 1 browser stores progress with a dedicated key and story progression', () => {
