@@ -8,13 +8,13 @@ const root = path.resolve(__dirname, '..');
 const source = p => fs.readFileSync(path.resolve(root, p), 'utf8');
 
 function loadBank(grade) {
-  const window = { MATHE_GRADES: require('../grades/catalog.js') };
-  const sandbox = { window, document: {body:{ dataset:{grade:String(grade)} }},
+  const sandbox = { MATHE_GRADES: require('../grades/catalog.js'),
+    document: {body:{ dataset:{grade:String(grade)} }},
     Math, Number, Object, Array, String, Set, Error, console };
-  sandbox.globalThis=sandbox;
+  sandbox.window = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(source('grades/upper-bank.js'),sandbox);
-  return window['MATHE_GRADE'+grade];
+  return sandbox['MATHE_GRADE'+grade];
 }
 
 for (const grade of [2,3]) {
