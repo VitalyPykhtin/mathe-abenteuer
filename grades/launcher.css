@@ -1,0 +1,29 @@
+@font-face{font-family:Fredoka;src:url(../fonts/fredoka.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Nunito;src:url(../fonts/nunito.woff2) format('woff2');font-display:swap}
+*{box-sizing:border-box}
+html{font-size:18px;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;margin:0;font:700 1rem/1.45 Nunito,system-ui,-apple-system,sans-serif;color:#1e293b;background:linear-gradient(160deg,#1d4ed8,#0d9488 55%,#4ade80);background-attachment:fixed}
+.shell{max-width:980px;margin:auto;padding:clamp(20px,4vw,38px) 16px 40px}
+.hero{text-align:center;color:#fff;margin-bottom:25px}
+.hero img{filter:drop-shadow(0 4px 16px #0f172a80);width:88px;height:88px;object-fit:contain}
+.eyebrow{font-size:.85rem;letter-spacing:.11em;opacity:.9;margin:10px 0}
+h1{font:900 clamp(2rem,6vw,3.2rem)/1.1 Fredoka,Nunito,sans-serif;margin:6px 0 14px}
+.hero>p:last-child{font-size:1.18rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grade{display:flex;gap:16px;align-items:center;background:#fff;border:4px solid #ffffffd9;border-radius:27px;text-decoration:none;color:#1e293b;box-shadow:0 10px 25px #0f172a40;padding:19px 18px;min-height:143px}
+.grade.open{transition:transform .12s}
+.grade.open:focus-visible{outline:5px solid #facc15;outline-offset:4px}
+.grade.open:active{transform:scale(.975)}
+.grade.coming{opacity:.7;border-style:dashed;cursor:default}
+.number{flex:0 0 70px;width:70px;height:70px;border-radius:22px;display:grid;place-items:center;color:#fff;font:900 2.75rem Fredoka,Nunito,sans-serif;background:linear-gradient(135deg,#2563eb,#14b8a6);box-shadow:0 5px 0 #1e40af}
+.grade:nth-child(2) .number{background:linear-gradient(135deg,#d97706,#f59e0b);box-shadow:0 5px 0 #b45309}
+.grade:nth-child(3) .number{background:linear-gradient(135deg,#7c3aed,#ec4899);box-shadow:0 5px 0 #6d28d9}
+.grade:nth-child(4) .number{background:linear-gradient(135deg,#be123c,#f59e0b);box-shadow:0 5px 0 #9f1239}
+.info{flex:1;min-width:0}.info strong{font:900 1.45rem Fredoka,Nunito,sans-serif;display:block}
+.info small{display:block;color:#475569;margin:6px 0;font-size:.85rem}
+.info em{display:block;color:#047857;font-size:.9rem;font-style:normal;font-weight:900}
+.coming .info em{color:#9a3412}
+.arrow{font-size:1.6rem;color:#047857}
+footer{text-align:center;color:#fff;margin-top:25px;font-size:.89rem}
+footer p{margin:8px auto}
+@media(max-width:720px){.grid{grid-template-columns:1fr;gap:13px}.grade{min-height:126px;padding:15px}.number{flex-basis:64px;width:64px;height:64px}}

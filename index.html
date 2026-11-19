@@ -1,26 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1e6fd9">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Mathe-Abenteuer im Zahlenland</title>
-<link rel="icon" href="img/e/gem_stone.png">
-<link rel="apple-touch-icon" href="img/e/gem_stone.png">
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css?v=15">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#1e6fd9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mathe-Abenteuer">
+  <meta name="description" content="Mathe-Abenteuer für Klasse 1 bis 4.">
+  <title>Mathe-Abenteuer · Wähle deine Klasse</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/e/gem_stone.png">
+  <link rel="apple-touch-icon" href="img/e/gem_stone.png">
+  <link rel="stylesheet" href="grades/launcher.css?v=16">
 </head>
 <body>
-<canvas id="gl"></canvas>
-<div id="app"></div>
-<div id="fx"></div>
-<script src="three.min.js"></script>
-<script src="tasks.js?v=15"></script>
-<script src="tasks2.js?v=15"></script>
-<script src="story.js?v=15"></script>
-<script src="story2.js?v=15"></script>
-<script src="world3d.js?v=15"></script>
-<script src="game.js?v=15"></script>
+  <main class="shell">
+    <header class="hero">
+      <img src="img/e/gem_stone.png" alt="" width="88" height="88">
+      <p class="eyebrow">MATHE-ABENTEUER IM ZAHLENLAND</p>
+      <h1>Hallo, Zahlenheld!</h1>
+      <p>In welcher Klasse bist du? Such dir dein Abenteuer aus.</p>
+    </header>
+    <section class="grid" aria-label="Klasse auswählen">
+      <a class="grade open" href="klasse1.html">
+        <span class="number">1</span><span class="info"><strong>1. Klasse</strong><small>🌳 Zahlen bis 20 · Rechnen · Formen</small><em>🎮 Jetzt spielen</em></span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <div class="grade coming" aria-label="2. Klasse: in Vorbereitung">
+        <span class="number">2</span><span class="info"><strong>2. Klasse</strong><small>🔢 Zahlen bis 100 · Einmaleins</small><em>🚧 In Vorbereitung</em></span>
+      </div>
+      <div class="grade coming" aria-label="3. Klasse: in Vorbereitung">
+        <span class="number">3</span><span class="info"><strong>3. Klasse</strong><small>🧩 Zahlen bis 1000 · Division</small><em>🚧 In Vorbereitung</em></span>
+      </div>
+      <a class="grade open" href="klasse4.html">
+        <span class="number">4</span><span class="info"><strong>4. Klasse</strong><small>💎 Original-Abenteuer mit 15 Kapiteln</small><em>🎮 Jetzt spielen</em></span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
+    <footer><p>Alle Spielstände werden auf diesem Gerät gespeichert. Die 4. Klasse bleibt unverändert.</p>
+      <p id="offline">Nach dem ersten Laden ist die App auch ohne Internet nutzbar.</p></footer>
+  </main>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js', {updateViaCache:'none'})
+        .then(function(r){r.update().catch(function(){});return navigator.serviceWorker.ready;})
+        .then(function(){
+          var el=document.getElementById('offline');
+          if(el) el.textContent='✈️ Offline vorbereitet';
+        }).catch(function(){});
+    }
+  </script>
 </body>
 </html>

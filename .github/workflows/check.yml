@@ -1,0 +1,25 @@
+name: Mathe-Abenteuer checks
+on:
+  push:
+    branches: [main, feature/multi-grade-foundation]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run all JavaScript tests
+        run: node --test tests/*.test.cjs
+      - name: Verify JavaScript syntax
+        run: |
+          node --check grades/catalog.js
+          node --check grades/klasse1.js
+          node --check grades/klasse1-app.js
+          node --check game.js
+          node --check sw.js
