@@ -1,10 +1,11 @@
-/* Multi-grade catalogue. The original Klasse 4 entry point remains index.html. */
+/* Multi-grade catalogue. The original Klasse 4 page now lives unchanged at klasse4.html. */
 (function (root) {
   'use strict';
 
   const catalogue = Object.freeze({
     1: Object.freeze({
-      grade: 1, title: '1. Klasse', status: 'prototype',
+      grade: 1, title: '1. Klasse', status: 'playable',
+      entryPoint: 'klasse1.html',
       progressKey: 'mathe-abenteuer-grade-1-v1',
       topics: [
         'Zahlen bis 20', 'Plus und Minus bis 20',
@@ -31,7 +32,7 @@
     }),
     4: Object.freeze({
       grade: 4, title: '4. Klasse', status: 'existing',
-      entryPoint: 'index.html',
+      entryPoint: 'klasse4.html',
       // Critical: never migrate or overwrite the existing Klasse 4 save in place.
       progressKey: 'mathe-abenteuer-v2'
     })
