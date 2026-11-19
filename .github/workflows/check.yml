@@ -1,7 +1,7 @@
 name: Mathe-Abenteuer checks
 on:
   push:
-    branches: [main, feature/multi-grade-foundation]
+    branches: [main, 'feature/**']
   pull_request:
     branches: [main]
 permissions:
@@ -21,5 +21,7 @@ jobs:
           node --check grades/catalog.js
           node --check grades/klasse1.js
           node --check grades/klasse1-app.js
+          node --check grades/upper-bank.js
+          node --check grades/upper-app.js
           node --check game.js
           node --check sw.js
