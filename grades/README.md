@@ -1,43 +1,43 @@
-# Mathe-Abenteuer — multi-grade development
+# Mathe-Abenteuer — multiple grades
 
-This folder begins a **non-breaking extension** of the existing German Klasse 4 game to Klassen 1–3.
+This folder powers the personal multi-grade fork. Start at the [fork guide](../FORK_GUIDE.md).
 
-## Status (foundation)
+## Status
 
-| Grade | State | Implemented |
-| --- | --- | --- |
-| 1 | Exercise-bank prototype | Four topic worlds with three levels each, returning the existing choice-question format |
-| 2 | Planned | Provisional topic catalogue only |
-| 3 | Planned | Provisional topic catalogue only |
-| 4 | Existing | Original 3D story/training, unchanged on `main` |
+| Grade | Status |
+| --- | --- |
+| 1 | **Playable first version** — 4 worlds × 3 levels (12 sets), 4 mini-story chapters, 3D stage reusing original assets, stars, coins, spoken German hints, separate progress and backup code |
+| 2 | In preparation — topic outline only, not shown as a clickable grade |
+| 3 | In preparation — topic outline only, not shown as a clickable grade |
+| 4 | Original complete game preserved on \`klasse4.html\`, untouched engine and storage key |
 
-**The new Grade 1 generators are not yet connected to the game's UI.** They are building blocks, not a complete playable Klasse 1 edition. No selector is exposed to children until it has a working destination.
+The current Klasse 1 version is **not a complete grade-year curriculum**. For example, money, time and lengths still need dedicated worlds, more visual exercise styles and parent/teacher review.
 
-## Architecture and backward compatibility
+## Architecture
 
-- Preserve `index.html`, `game.js`, `tasks.js`, `tasks2.js`, `story.js`, `story2.js` and all Klasse 4 gameplay until a separately reviewed integration.
-- `catalog.js` records grades, development status and **separate** future save keys.
-- `klasse1.js` introduces independent randomized tasks in the existing `choice` format (`q`, `options`, `correct`, `explain`, optional `visual`).
-- Never reuse the original storage key `mathe-abenteuer-v2` or mirror cache `mathe-abenteuer-save` for other grades. Do not automatically migrate/swap Klasse 4 progress; keep save, backup/export and restore routines isolated by class.
-- A future shared grade-aware game layer should reuse the original 3D scenes, audio, characters and rewards, while loading distinct curricula and story chapters per grade.
-- Keep iPad/PWA and offline operation. When new scripts are integrated into the launcher, update the service-worker cache list and version.
-- Preserve credit attribution in `CREDITS.md`. The upstream repository does not declare a license; independently confirm reuse/distribution rights before external publication or commercialization.
+- \`../index.html\`: grade launcher. Never link to unfinished grades.
+- \`../klasse1.html\`: first-grade adventure; \`../klasse4.html\`: the original HTML preserved.
+- \`catalog.js\`: all four grades and separated progress storage keys.
+- \`klasse1.js\`: exercise generators returning existing engine-compatible choice question objects.
+- \`klasse1-app.js\`: dedicated browser runtime. It reuses \`../world3d.js\`, \`../three.min.js\`, original character artwork, but never calls \`../game.js\` or mutates the original state.
+- \`klasse1.css\`, \`launcher.css\`: touch-first layouts.
+- \`../sw.js\`: caches launcher plus both playable pages, preserves progress mirrors.
+- \`../tests\`: generator and safety checks.
 
-## Milestones
+The original 4th-grade progress remains \`mathe-abenteuer-v2\` and its mirror cache \`mathe-abenteuer-save\`. Each new grade must use a separate save key and backup format. Never silently overwrite or migrate saves.
 
-1. **Foundation** — grade catalogue, first Klasse 1 question generators, lightweight Node tests (this PR).
-2. **Shared grade selector** — select 1–4 in the app; allow only playable grades; protect Klasse 4 progress and add per-grade storage, independent backups.
-3. **Klasse 1** — complete topic coverage, age-appropriate reading/voice guidance, visual counting, story chapters and reward integration.
-4. **Klasse 2** — numbers to 100, addition/subtraction, early multiplication/division, measurements, geometry and story.
-5. **Klasse 3** — numbers to 1,000, multiplication/division and written methods, word problems, geometry and story.
-6. **Release readiness** — teacher/parent review against the Berlin/Brandenburg mathematics curriculum, accessibility checks and iPad regression/offline tests.
+## Planned milestones
 
-Topic order is a provisional teaching plan, **not yet a verified representation of the official curriculum**. Check class-specific outcomes and boundaries before publishing.
+1. Validate this playable Klasse 1 first version on iPad, including offline and German speech.
+2. Extend Klasse 1 to the full expected mathematics curriculum and richer visual questions.
+3. Build Klasse 2 exercises, storyline and separate saves.
+4. Build Klasse 3 exercises, storyline and separate saves.
+5. Review material against the Berlin/Brandenburg Rahmenlehrplan, test accessibility and iPad reliability.
 
-## Test
+Source credit: [dreef3/mathe-abenteuer](https://github.com/dreef3/mathe-abenteuer). Personal use only; upstream has no explicit top-level LICENSE file.
 
-Run with Node.js 20+:
+Run tests:
 
-```sh
-node --test tests/grade1.test.cjs
-```
+\`\`\`sh
+node --test tests/*.test.cjs
+\`\`\`
