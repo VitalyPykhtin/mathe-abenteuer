@@ -326,7 +326,7 @@
   }
   function fromCode(raw) {
     try {
-      const match = String(raw).replace(/\s/g, '').match(new RegExp('^MA-G' + GRADE + ':([A-Za-z0-9+/=]+);
+      const match = String(raw).replace(/\s/g, '').match(new RegExp('^MA-G' + GRADE + ':([A-Za-z0-9+/=]+)$'));
       if (!match) return null;
       const value = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
       return validSave(value) ? Object.assign(defaults(), value) : null;
@@ -377,89 +377,6 @@
       }
       case 'reset': {
         if (!confirm('Wirklich nur den Spielstand der ' + GRADE + '. Klasse löschen?')) break;
-        state = defaults(); save(); welcome(); break;
-      }
-      default: break;
-    }
-  }
-  app.addEventListener('click', event => {
-    const button = event.target.closest('[data-action]');
-    if (button && !button.disabled) dispatch(button.dataset.action, button);
-  });
-  app.addEventListener('submit', event => {
-    if (event.target.id !== 'name-form') return;
-    event.preventDefault();
-    const value = document.getElementById('name').value.trim().replace(/[<>]/g, '');
-    state.name = value.slice(0, 24) || 'Zahlenheld';
-    save(); audio([440, 660, 880]); home();
-  });
-  try {
-    if (typeof W3 !== 'undefined' && !W3.init(document.getElementById('world')))
-      document.getElementById('world').style.display = 'none';
-  } catch (_) { document.getElementById('world').style.display = 'none'; }
-  home(); restoreMirror();
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
-      reg.update().catch(() => {});
-      return navigator.serviceWorker.ready;
-    }).then(() => {
-      const label = document.getElementById('offline');
-      if (label) label.textContent = '✈️ Offline vorbereitet';
-    }).catch(() => {});
-  }
-})();
-));
-      if (!match) return null;
-      const value = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
-      return validSave(value) ? Object.assign(defaults(), value) : null;
-    } catch (_) { return null; }
-  }
-  function chooseAvatar(avatar) {
-    if (avatar !== 'boy' && avatar !== 'girl') return;
-    const input = document.getElementById('name');
-    const name = input ? input.value : '';
-    state.avatar = avatar;
-    welcome();
-    const newInput = document.getElementById('name');
-    if (newInput) newInput.value = name;
-  }
-  function dispatch(action, button) {
-    const n = Number(button.dataset.world), level = Number(button.dataset.level);
-    switch (action) {
-      case 'home': home(); break;
-      case 'training': training(); break;
-      case 'story': storyMenu(); break;
-      case 'avatar': chooseAvatar(button.dataset.avatar); break;
-      case 'play': play(n, level, 'training'); break;
-      case 'chapter': chapterIntro(n); break;
-      case 'begin-story': play(n, 0, 'story'); break;
-      case 'answer': answer(Number(button.dataset.option)); break;
-      case 'next': next(); break;
-      case 'quit': quit(); break;
-      case 'read-question': if (context) speak(context.q); break;
-      case 'read-story': speak(CHAPTERS[currentWorld].text); break;
-      case 'retry': play(n, level, button.dataset.mode === 'story' ? 'story' : 'training'); break;
-      case 'toggle-voice': state.voice = !state.voice; save(); home(); break;
-      case 'toggle-sound': state.sound = !state.sound; save(); home(); break;
-      case 'parent': parent(); break;
-      case 'copy': {
-        const area = document.getElementById('save-code');
-        area.focus(); area.select(); area.setSelectionRange(0, area.value.length);
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(area.value).then(() => alert('Code kopiert!'),
-            () => alert('Bitte den Code von Hand kopieren.'));
-        } else alert('Bitte den markierten Code von Hand kopieren.');
-        break;
-      }
-      case 'restore': {
-        const newSave = fromCode(document.getElementById('restore-code').value);
-        if (!newSave) { alert('Ungültiger Code für die 1. Klasse.'); break; }
-        if (!confirm('Den aktuellen Spielstand der 1. Klasse ersetzen?')) break;
-        state = newSave; save(); home(); break;
-      }
-      case 'reset': {
-        if (!confirm('Wirklich nur den Spielstand der 1. Klasse löschen?')) break;
         state = defaults(); save(); welcome(); break;
       }
       default: break;
