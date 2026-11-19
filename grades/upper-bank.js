@@ -137,8 +137,9 @@
       'Rechne ' + quotient + ' · ' + divisor + ' + ' + remainder + ' = ' + dividend + '.');
   };
   const textProblem = level => () => {
-    const n = grade === 2 ? rnd(3, [8, 12, 20][level]) : rnd(6, [15, 30, 80][level]);
     const a = rnd(2, grade === 2 ? [5, 7, 8][level] : [5, 9, 10][level]);
+    const limit = grade === 2 ? [8, 12, 20][level] : [15, 30, 80][level];
+    const n = rnd(grade === 2 ? 3 : 6, Math.min(limit, Math.floor(max / a)));
     const result = a * n;
     return numeric('Im Garten gibt es ' + a + ' Reihen mit je ' + n +
       ' Blumen. Wie viele Blumen sind das?', result, 0, max,
