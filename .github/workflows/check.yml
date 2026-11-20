@@ -19,6 +19,7 @@ jobs:
       - name: Verify JavaScript syntax
         run: |
           node --check grades/catalog.js
+          node --check grades/avatars.js
           node --check grades/klasse1.js
           node --check grades/klasse1-app.js
           node --check grades/upper-bank.js
