@@ -3,6 +3,9 @@
   'use strict';
 
   const app = document.getElementById('game');
+  const AVATARS = window.MATHE_AVATARS;
+  if (!AVATARS || AVATARS.length !== 12) throw new Error('Avatar catalogue missing');
+  const avatarById = id => AVATARS.find(a => a.id === id) || AVATARS[0];
   const GRADE = Number(document.body.dataset.grade);
   if (GRADE !== 2 && GRADE !== 3) throw new Error('Grade 2 or 3 required');
   const bank = window['MATHE_GRADE' + GRADE];
@@ -103,13 +106,13 @@
     if (typeof W3 === 'undefined' || !W3.ok) return;
     W3.setEnv(WORLD_SCENES[n]);
     W3.setActors([
-      { id: 'hero', img: 'img/e/' + (state.avatar === 'boy' ? 'boy' : 'girl') + '.png', x: 30, y: 3, size: 38, anim: 'hop' },
+      { id: 'hero', img: avatarById(state.avatar).image, x: 30, y: 3, size: 38, anim: 'hop' },
       { id: 'finn', img: 'img/e/fox.png', x: 58, y: 3, size: 30, anim: 'hop' },
       { id: 'eule', img: 'img/e/owl.png', x: 77, y: 26, size: 27, anim: 'float' }
     ]);
   }
   const top = () => { window.scrollTo(0, 0); };
-  const avatarImg = () => 'img/e/' + (state.avatar === 'boy' ? 'boy' : 'girl') + '.png';
+  const avatarImg = () => avatarById(state.avatar).image;
   const foot = () => '<footer class="footer">' +
     '<button type="button" data-action="toggle-voice">' + (state.voice ? '🗣️ Vorlesen an' : '🤐 Vorlesen aus') + '</button>' +
     '<button type="button" data-action="toggle-sound">' + (state.sound ? '🔊 Töne an' : '🔇 Töne aus') + '</button>' +
@@ -123,11 +126,11 @@
     app.innerHTML = '<section class="card center"><h1>Willkommen im Zahlenland!</h1>' +
       '<p class="lead">Wie heißt du? Wir gehen gemeinsam auf Zahlen-Abenteuer!</p>' +
       '<div class="avatars">' +
-      ['girl', 'boy'].map((id, index) =>
-        '<button class="avatar ' + (state.avatar === id ? 'chosen' : '') +
-        '" data-action="avatar" data-avatar="' + id + '" aria-label="' +
-        (index ? 'Junge' : 'Mädchen') + '"><img src="img/e/' + id + '.png" alt="">' +
-        (index ? 'Junge' : 'Mädchen') + '</button>').join('') +
+      AVATARS.map(a =>
+        '<button type="button" class="avatar ' + (state.avatar === a.id ? 'chosen' : '') +
+        '" data-action="avatar" data-avatar="' + a.id + '" aria-label="' + a.label +
+        '" aria-pressed="' + (state.avatar === a.id) + '"><img src="' + a.image + '" alt="" loading="lazy">' +
+        '<span>' + a.label + '</span></button>').join('') +
       '</div><form id="name-form"><label for="name">Dein Name</label>' +
       '<input class="name-input" id="name" name="name" maxlength="24" autocomplete="off" placeholder="Wie heißt du?" value="' + esc(state.name) + '">' +
       '<button type="submit" class="btn">Los geht’s! 🚀</button></form></section>';
@@ -142,7 +145,8 @@
       '<h2>Hallo, ' + esc(state.name) + '! 👋</h2>' +
       '<p class="lead">Hilf Finn und Frau Eule im Zahlenland. Heute kannst du zählen, rechnen und Formen entdecken!</p>' +
       '<div class="actions"><button class="btn" data-action="story">📖 Abenteuer</button>' +
-      '<button class="btn alt" data-action="training">🎯 Training</button></div></section>' +
+      '<button class="btn alt" data-action="training">🎯 Training</button>' +
+      '<button class="btn soft" data-action="change-avatar">🧑‍🎨 Figur ändern</button></div></section>' +
       '<section class="card"><h3>Deine Erfolge</h3><p>Geschafft: ' + Object.keys(state.completed).filter(k => state.completed[k]).length +
       ' von ' + CHAPTERS.length + ' Kapiteln · ' + Math.max(0, state.solved) + ' richtige Antworten</p>' +
       '<div class="progress"><div style="width:' + (progress() / (bank.worlds.length * 3) * 100) + '%"></div></div>' +
@@ -333,7 +337,7 @@
     } catch (_) { return null; }
   }
   function chooseAvatar(avatar) {
-    if (avatar !== 'boy' && avatar !== 'girl') return;
+    if (!AVATARS.some(a => a.id === avatar)) return;
     const input = document.getElementById('name');
     const name = input ? input.value : '';
     state.avatar = avatar;
@@ -348,6 +352,7 @@
       case 'training': training(); break;
       case 'story': storyMenu(); break;
       case 'avatar': chooseAvatar(button.dataset.avatar); break;
+      case 'change-avatar': welcome(); break;
       case 'play': play(n, level, 'training'); break;
       case 'chapter': chapterIntro(n); break;
       case 'begin-story': play(n, 0, 'story'); break;
