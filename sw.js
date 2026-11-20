@@ -1,16 +1,17 @@
 'use strict';
 /* Offline cache for the personal multi-grade fork. Keep all local progress mirror caches intact. */
 importScripts('tasks.js', 'tasks2.js', 'story.js', 'story2.js');
-const V = 'v17', CACHE = 'mathe-abenteuer-' + V;
+const V = 'v18', CACHE = 'mathe-abenteuer-' + V;
 const CORE = [
   './', 'index.html', 'klasse1.html', 'klasse2.html', 'klasse3.html', 'klasse4.html',
   'style.css', 'game.js', 'tasks.js', 'tasks2.js', 'story.js', 'story2.js',
   'world3d.js', 'three.min.js', 'manifest.json',
-  'grades/catalog.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
+  'grades/catalog.js', 'grades/avatars.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
   'grades/klasse1-app.js', 'grades/klasse1.css',
   'fonts/fredoka.woff2', 'fonts/nunito.woff2',
   'img/e/gem_stone.png', 'img/e/boy.png', 'img/e/girl.png',
-  'img/e/fox.png', 'img/e/owl.png'
+  'img/e/fox.png', 'img/e/owl.png',
+  'img/e/robot.svg', 'img/e/pirate.svg', 'img/e/knight.svg'
 ];
 const EMO = [...new Set(['compass', 'glowing_star', ...Object.values(ACT).map(a => a[0]),
   ...HEROES.map(h => h[0]), ...STICKERS.map(s => s[0]), ...ICONS])].map(f => 'img/e/' + f + '.png');
