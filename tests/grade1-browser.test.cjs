@@ -42,7 +42,7 @@ test('first-grade page can start, answer eight questions, and save stars in a mo
   };
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  for (const name of ['grades/catalog.js', 'grades/klasse1.js', 'grades/klasse1-app.js']) {
+  for (const name of ['grades/catalog.js', 'grades/klasse1.js', 'grades/avatars.js', 'grades/klasse1-app.js']) {
     vm.runInContext(script(name), sandbox, { filename: name });
   }
   assert.match(game.innerHTML, /Willkommen im Zahlenland/);
