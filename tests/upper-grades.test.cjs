@@ -74,6 +74,7 @@ function runBrowser(grade) {
   };
   const window={
     MATHE_GRADES: require('../grades/catalog.js'),
+    MATHE_AVATARS: require('../grades/avatars.js'),
     ['MATHE_GRADE'+grade]:bank,
     document,navigator:{},scrollTo(){},confirm(){return true;},alert(){},
     W3:{ok:false,init(){return false;}},

@@ -68,3 +68,11 @@ textarea{display:block;resize:vertical;width:100%;min-height:92px;padding:12px;b
 .footer button{border:0;background:#ffffffe3;padding:11px 16px;border-radius:99px;font-weight:900}
 @media(max-width:460px){html{font-size:16px}.options{gap:9px}.choice{min-height:73px}.world-stage{height:205px}.card{padding:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Character picker: all twelve avatars fit neatly on iPad, even in landscape mode. */
+.avatars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%;max-width:750px;margin:16px auto}
+.avatar{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:130px;padding:10px;border:3px solid #bae6fd;background:#e0f2fe;border-radius:20px;color:#17304f;box-shadow:0 3px 0 #bae6fd}
+.avatar.chosen{background:#dcfce7;border-color:#16a34a;box-shadow:0 0 0 2px #bbf7d0}
+.avatar img{display:block;width:86px;height:86px;max-width:100%;object-fit:contain;margin:0 auto}
+.avatar span{font:900 .83rem/1.2 Nunito,system-ui,sans-serif;overflow-wrap:anywhere;text-align:center}
+@media(max-width:530px){.avatars{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.avatar{min-height:112px;padding:8px}.avatar img{width:70px;height:70px}.avatar span{font-size:.76rem}}

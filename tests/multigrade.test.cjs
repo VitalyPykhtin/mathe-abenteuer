@@ -35,7 +35,7 @@ test('new Grade 1 page reuses original procedural Three.js world', () => {
 test('service worker pre-caches all grade pages and preserves both saves', () => {
   const worker = read('sw.js');
   for (const file of ['index.html', 'klasse1.html', 'klasse2.html', 'klasse3.html', 'klasse4.html',
-    'grades/catalog.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
+    'grades/catalog.js', 'grades/avatars.js', 'grades/launcher.css', 'grades/upper-bank.js', 'grades/upper-app.js', 'grades/klasse1.js',
     'grades/klasse1-app.js', 'grades/klasse1.css']) {
     assert.ok(worker.includes("'" + file + "'"), file);
   }
