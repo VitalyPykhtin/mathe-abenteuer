@@ -46,7 +46,10 @@ test('both mini-adventure engines use selected image on the home page and 3D sta
 test('avatar choice and saved progress survive class 1 and class 2 profile edits', () => {
   for (const grade of [1,2]) {
     const events = {};
-    const stored = new Map();
+    const stored = new Map([[catalogue[grade].progressKey, JSON.stringify({
+      grade, version:1, name:'Mia', avatar:'girl', voice:true, sound:true,
+      coins:30, solved:8, stars:{'0-0':3}, completed:{}, sessions:1
+    })]]);
     const app = {innerHTML:'',addEventListener(type,fn){events[type]=fn;}};
     const input = {value:'Mia'};
     const document = {
@@ -72,11 +75,7 @@ test('avatar choice and saved progress survive class 1 and class 2 profile edits
       target:{closest(){return {disabled:false,dataset:{action,...data}};}}
     });
     // Both previously saved settings and existing task progress are preserved.
-    events.submit({target:{id:'name-form'},preventDefault(){}});
     const key=catalogue[grade].progressKey;
-    const before=JSON.parse(stored.get(key));
-    before.stars={'0-0':3};before.coins=30;
-    stored.set(key,JSON.stringify(before));
     click('change-avatar');
     assert.match(app.innerHTML,/Astronaut/);
     assert.match(app.innerHTML,/Roboter/);
